@@ -3032,708 +3032,340 @@ async def _live_input(prompt=""):
   });
 })();
 </script>
- <!-- NPC VİDEO REHBERİ & SAĞDA ANLIK AÇILAN GÖREV ÇEKMECESİ (V3 - TAM UYUMLU) -->
+<!-- ELİT GİRİŞ EKRANI & DOĞAL TÜRKÇE YAPAY ZEKA SES MOTORU -->
 <style>
-  .npc-v3-tab-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    border-bottom: 1.5px solid var(--border-line, #334155);
-    padding-bottom: 8px;
-  }
-  .npc-v3-tab-btn {
-    background: var(--bg-panel, #1e293b);
-    color: var(--text-muted, #94a3b8);
-    border: 1.5px solid var(--border-line, #334155);
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 0.8rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .npc-v3-tab-btn.active {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: #fff;
-    border-color: #eab308;
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
-  }
-  #npc-v3-wrapper {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .npc-v3-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    background: var(--bg-panel, #1e293b);
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border-line, #334155);
-  }
-  .npc-v3-select {
-    background: var(--bg-editor, #0f172a);
-    color: var(--text-primary, #f8fafc);
-    border: 1.5px solid #8b5cf6;
-    border-radius: 6px;
-    padding: 6px 9px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    max-width: 100%;
-    outline: none;
-  }
-  .npc-v3-btn-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-  }
-  .npc-v3-btn {
-    background: var(--bg-editor, #0f172a);
-    color: var(--text-primary, #f8fafc);
-    border: 1.5px solid var(--border-line, #334155);
-    border-radius: 6px;
-    padding: 6px 11px;
-    font-size: 0.77rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .npc-v3-btn:hover {
-    border-color: #eab308;
-  }
-  .npc-v3-btn.primary {
-    background: linear-gradient(135deg, #9333ea, #6b21a8);
-    color: #fff;
-    border-color: #eab308;
-  }
-  .npc-v3-btn.next-unlocked {
-    background: linear-gradient(135deg, #eab308, #ca8a04);
-    color: #0f172a;
-    border-color: #fef08a;
-    font-weight: 900;
-    animation: pulseNextV3 1.4s infinite;
-  }
-  @keyframes pulseNextV3 {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6); }
-    50% { box-shadow: 0 0 14px 3px rgba(234, 179, 8, 0.35); }
-  }
-  .npc-v3-card {
-    background: radial-gradient(circle at top left, rgba(124, 58, 237, 0.24), #0f172a 78%);
-    border: 1.5px solid #334155;
-    border-radius: 10px;
-    padding: 12px;
+  #elite-gate-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 35%, #1e1b4b 0%, #090d16 65%, #05070c 100%);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
-  .npc-v3-char-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .npc-v3-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #7e22ce, #3b0764);
-    border: 2px solid #eab308;
-    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.6rem;
-    flex-shrink: 0;
-  }
-  .npc-v3-avatar.speaking {
-    animation: npcBounceV3 0.45s infinite alternate;
-    box-shadow: 0 0 18px rgba(234, 179, 8, 0.55);
-  }
-  @keyframes npcBounceV3 {
-    from { transform: translateY(0) scale(1); }
-    to { transform: translateY(-3px) scale(1.04); }
-  }
-  .npc-v3-speech {
-    flex: 1;
-    background: rgba(15, 23, 42, 0.92);
-    border: 1.5px solid rgba(168, 85, 247, 0.55);
-    border-left: 4px solid #eab308;
-    border-radius: 8px;
-    padding: 9px 11px;
-    font-size: 0.83rem;
-    line-height: 1.45;
-    color: #f8fafc;
-    min-height: 54px;
-  }
-  .npc-v3-board {
-    background: #090d16;
-    border: 1.5px solid #334155;
-    border-radius: 8px;
-    padding: 12px;
-    font-family: 'Consolas', monospace;
-    font-size: 0.82rem;
-    color: #e2e8f0;
-    min-height: 120px;
-    white-space: pre-wrap;
-    position: relative;
-  }
-  .npc-v3-board-tag {
-    position: absolute;
-    top: 6px;
-    right: 10px;
-    font-size: 0.65rem;
-    color: #eab308;
-    font-weight: 800;
-  }
-  .npc-v3-track {
-    height: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  .npc-v3-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #8b5cf6, #eab308);
-    transition: width 0.35s ease;
-  }
-  .npc-v3-chat {
-    background: #0f172a;
-    border: 1.5px solid #334155;
-    border-radius: 8px;
-    padding: 9px;
-    max-height: 120px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 0.79rem;
-  }
-  .npc-v3-msg {
-    padding: 6px 9px;
-    border-radius: 6px;
-    background: rgba(139, 92, 246, 0.14);
-    border-left: 3px solid #8b5cf6;
-    color: #f8fafc;
-    line-height: 1.4;
-  }
-  .npc-v3-msg.task-alert {
-    background: rgba(234, 179, 8, 0.18);
-    border-left-color: #eab308;
-    font-weight: 700;
+    z-index: 2147483647;
+    opacity: 0;
+    animation: eliteGateAppear 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.85s ease;
   }
 
-  /* EKRANIN SAĞINDA ANINDA AÇILAN YÜZEN ÖDEV PANELİ */
-  #npc-v3-drawer {
-    position: fixed;
-    top: 74px;
-    right: 18px;
-    width: min(420px, 92vw);
-    background: linear-gradient(155deg, rgba(30, 27, 75, 0.99) 0%, rgba(11, 15, 26, 0.99) 100%);
-    border: 2px solid #eab308;
-    border-left: 5px solid #a855f7;
-    border-radius: 10px;
-    padding: 16px;
-    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.8), 0 0 28px rgba(234, 179, 8, 0.35);
-    z-index: 2147483645;
+  /* Giriş ekranının sade ve elit açılış efekti */
+  @keyframes eliteGateAppear {
+    0% {
+      opacity: 0;
+      filter: blur(12px);
+      transform: scale(1.03);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+
+  /* İsim girildikten sonraki sade, sinematik perde açılışı */
+  #elite-gate-overlay.gate-opening {
+    opacity: 0;
+    transform: translateY(-28px) scale(1.02);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  .elite-gate-card {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    transform: translateX(130%);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
-  }
-  #npc-v3-drawer.open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .npc-v3-drawer-head {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(234, 179, 8, 0.3);
-    padding-bottom: 8px;
+    text-align: center;
+    padding: 36px 32px;
+    width: min(440px, 92vw);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.06) 0%, rgba(124, 58, 237, 0.16) 50%, rgba(11, 15, 26, 0.92) 100%);
+    border: 1px solid rgba(196, 181, 253, 0.28);
+    border-top: 2px solid rgba(234, 179, 8, 0.75);
+    border-radius: 14px;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65), 0 0 40px rgba(124, 58, 237, 0.18);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: eliteCardRise 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
   }
-  .npc-v3-drawer-title {
-    font-size: 0.82rem;
-    font-weight: 900;
-    color: #eab308;
-    letter-spacing: 0.06em;
+
+  @keyframes eliteCardRise {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .elite-brand-pill {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    color: #eab308;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.35);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 14px;
   }
-  .npc-v3-drawer-close {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+
+  .elite-main-title {
+    font-size: clamp(2rem, 4.2vw, 2.75rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 15%, #e9d5ff 60%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  .elite-sub-title {
+    font-size: 0.92rem;
+    font-weight: 500;
     color: #cbd5e1;
-    border-radius: 4px;
-    padding: 2px 7px;
-    font-size: 0.75rem;
-    cursor: pointer;
+    margin: 8px 0 24px 0;
+    letter-spacing: 0.02em;
   }
-  .npc-v3-drawer-desc {
-    font-size: 0.85rem;
-    color: #f3e8ff;
-    line-height: 1.48;
-    background: rgba(139, 92, 246, 0.16);
-    padding: 9px 11px;
-    border-radius: 6px;
-    border-left: 3px solid #eab308;
-  }
-  .npc-v3-drawer-editor {
+
+  .elite-input-group {
     width: 100%;
-    min-height: 105px;
-    background: #060911;
-    color: #f8fafc;
-    border: 1.5px solid #a855f7;
-    border-radius: 6px;
-    padding: 10px;
-    font-family: 'Consolas', monospace;
-    font-size: 0.86rem;
-    line-height: 1.45;
-    resize: vertical;
-    outline: none;
-  }
-  .npc-v3-drawer-editor:focus {
-    border-color: #eab308;
-    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.22);
-  }
-  .npc-v3-drawer-actions {
     display: flex;
     gap: 8px;
-    justify-content: space-between;
+  }
+
+  .elite-name-input {
+    flex: 1;
+    background: rgba(15, 23, 42, 0.85);
+    color: #f8fafc;
+    border: 1.5px solid rgba(168, 85, 247, 0.45);
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .elite-name-input::placeholder {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .elite-name-input:focus {
+    border-color: #eab308;
+    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
+  }
+
+  .elite-name-btn {
+    background: linear-gradient(135deg, #9333ea 0%, #6d28d9 100%);
+    color: #ffffff;
+    border: 1px solid rgba(234, 179, 8, 0.65);
+    border-radius: 8px;
+    padding: 11px 18px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  .elite-name-btn:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+    box-shadow: 0 6px 20px rgba(147, 51, 234, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .header-user-badge {
+    display: inline-flex;
     align-items: center;
-  }
-  .npc-v3-drawer-fb {
-    font-size: 0.81rem;
-    font-weight: 700;
-    padding: 8px 10px;
-    border-radius: 6px;
-    display: none;
-    line-height: 1.4;
-  }
-  .npc-v3-drawer-fb.ok {
-    display: block;
-    background: rgba(16, 185, 129, 0.2);
-    border: 1px solid #10b981;
-    color: #6ee7b7;
-  }
-  .npc-v3-drawer-fb.err {
-    display: block;
-    background: rgba(244, 63, 94, 0.2);
-    border: 1px solid #f43f5e;
-    color: #fda4af;
+    gap: 5px;
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(255, 255, 255, 0.06));
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    border-left: 3px solid var(--accent-gold, #eab308);
+    color: var(--text-primary, #f8fafc);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 </style>
 
 <script>
 (function () {
-  const NPC_LESSONS = [
-    {
-      title: "1. Değişkenler ve Ekrana Yazdırma (print)",
-      steps: [
-        { text: "Merhaba! Python'da ekrana yazı veya sonuç basmak için print() fonksiyonunu kullanırız.", code: '# Ekrana mesaj yazdırma\nprint("Python Stüdyoya Hoşgeldin!")' },
-        { text: "Değişkenler verileri hafızada tutan kutulardır. Eşittir (=) işaretiyle değer atarız.", code: '# Değişken tanımlama\nisim = "Ahmet"\npuan = 100\nprint(isim, puan)' }
-      ],
-      taskPrompt: "Adı 'sehir' olan bir değişken oluşturup içine istediğin bir şehir yaz ve print(sehir) ile ekrana bastır.",
-      starterCode: 'sehir = "Samsun"\nprint(sehir)',
-      validate: (code, out) => /sehir\s*=/.test(code) && /print\s*\(/.test(code) && out.trim().length > 0
-    },
-    {
-      title: "2. Veri Tipleri ve Tür Dönüşümleri",
-      steps: [
-        { text: "Python'da metinler str, tam sayılar int, ondalıklı sayılar float tipindedir.", code: 'metin = "25"\nsayi = int(metin)\nprint(sayi + 5)' },
-        { text: "Bir verinin tipini öğrenmek için type() komutunu kullanırız.", code: 'oran = 3.14\nprint(type(oran))' }
-      ],
-      taskPrompt: "Metin halindeki '40' sayısını int() ile tam sayıya çevirip üzerine 10 ekle ve sonucu ekrana yazdır (Çıktı 50 olmalı).",
-      starterCode: 'x = "40"\nprint(int(x) + 10)',
-      validate: (code, out) => /int\s*\(/.test(code) && out.trim() === "50"
-    },
-    {
-      title: "3. Kullanıcıdan Veri Alma (input)",
-      steps: [
-        { text: "Kullanıcıdan klavye ile bilgi almak için input() fonksiyonu kullanılır.", code: 'ad = input("Adın nedir? ")\nprint("Selam", ad)' },
-        { text: "input() her zaman metin (str) döndürür; matematik işlemi yapacaksak int() ile çevirmeliyiz.", code: 'yas = int(input("Yaşın: "))\nprint(yas + 1)' }
-      ],
-      taskPrompt: "input() komutuyla kullanıcıdan bir kelime al ve print() ile ekrana yazdır (Testte otomatik 'Python' gönderilecek).",
-      starterCode: 'mesaj = input("Bir kelime gir: ")\nprint(mesaj)',
-      mockInputs: ["Python"],
-      validate: (code, out) => /input\s*\(/.test(code) && /print\s*\(/.test(code) && out.includes("Python")
-    },
-    {
-      title: "4. Karar Yapıları (if - elif - else)",
-      steps: [
-        { text: "Koşullara göre farklı kod blokları çalıştırmak için if, elif ve else kullanırız. Girintilere dikkat et!", code: 'not_degeri = 85\nif not_degeri >= 50:\n    print("Geçti")\nelse:\n    print("Kaldı")' },
-        { text: "Birden fazla koşul kontrol etmek istediğimizde araya elif ekleriz.", code: 'sicaklik = 30\nif sicaklik > 25:\n    print("Hava sıcak")' }
-      ],
-      taskPrompt: "'sayi = 15' değişkeni için eğer sayı 10'dan büyükse ekrana 'Büyük' yazdıran bir if bloğu yaz.",
-      starterCode: 'sayi = 15\nif sayi > 10:\n    print("Büyük")',
-      validate: (code, out) => /if\s+/.test(code) && out.trim().toLowerCase().includes("büyük")
-    },
-    {
-      title: "5. For Döngüsü ve range()",
-      steps: [
-        { text: "Belirli sayıda tekrar eden işlemler için for döngüsü ve range() kullanılır.", code: 'for i in range(1, 4):\n    print(i, ". adım")' },
-        { text: "range(5) yazdığımızda Python 0'dan başlayıp 4'e kadar 5 kez döner.", code: 'toplam = 0\nfor x in range(1, 6):\n    toplam += x\nprint(toplam)' }
-      ],
-      taskPrompt: "for döngüsü ve range() kullanarak ekrana alt alta 1, 2 ve 3 sayılarını yazdır.",
-      starterCode: 'for i in range(1, 4):\n    print(i)',
-      validate: (code, out) => /for\s+/.test(code) && /range\s*\(/.test(code) && out.replace(/\s+/g, '') === "123"
-    },
-    {
-      title: "6. While Döngüsü ve break",
-      steps: [
-        { text: "Koşul doğru (True) olduğu sürece çalışan döngüye while döngüsü denir.", code: 'sayac = 1\nwhile sayac <= 3:\n    print(sayac)\n    sayac += 1' },
-        { text: "Döngüyü anında durdurmak için break komutunu kullanırız.", code: 'while True:\n    print("Tek sefer çalıştı")\n    break' }
-      ],
-      taskPrompt: "while döngüsü ile 'x = 3' değerinden başlayıp 1'e kadar (3, 2, 1) geriye doğru ekrana yazdır.",
-      starterCode: 'x = 3\nwhile x >= 1:\n    print(x)\n    x -= 1',
-      validate: (code, out) => /while\s+/.test(code) && out.replace(/\s+/g, '') === "321"
-    },
-    {
-      title: "7. Listeler ve Liste Metotları",
-      steps: [
-        { text: "Birden fazla veriyi sıralı şekilde saklamak için köşeli parantez [] ile liste oluştururuz.", code: 'dersler = ["Matematik", "Fizik", "Python"]\nprint(dersler[2])' },
-        { text: "Listenin sonuna yeni eleman eklemek için .append() metodunu kullanırız.", code: 'sayilar = [10, 20]\nsayilar.append(30)\nprint(sayilar)' }
-      ],
-      taskPrompt: "'meyveler = [\"Elma\", \"Muz\"]' listesine .append() ile \"Çilek\" ekle ve listeyi print(meyveler) ile yazdır.",
-      starterCode: 'meyveler = ["Elma", "Muz"]\nmeyveler.append("Çilek")\nprint(meyveler)',
-      validate: (code, out) => /\.append\s*\(/.test(code) && out.includes("Çilek")
-    },
-    {
-      title: "8. Fonksiyonlar (def ve return)",
-      steps: [
-        { text: "Kendi özel komutlarımızı oluşturmak için def anahtar kelimesini kullanırız.", code: 'def selamla(isim):\n    print("Merhaba", isim)\n\nselamla("Kaptan")' },
-        { text: "Hesaplanan bir sonucu dışarı aktarmak için return komutu kullanılır.", code: 'def kare(n):\n    return n * n\n\nprint(kare(4))' }
-      ],
-      taskPrompt: "İki sayıyı toplayıp return ile döndüren 'topla(a, b)' fonksiyonunu yaz ve print(topla(6, 7)) ile 13 sonucunu bastır.",
-      starterCode: 'def topla(a, b):\n    return a + b\n\nprint(topla(6, 7))',
-      validate: (code, out) => /def\s+topla/.test(code) && /return/.test(code) && out.trim() === "13"
-    },
-    {
-      title: "9. Sözlükler (Dictionaries)",
-      steps: [
-        { text: "Sözlükler verileri anahtar: değer (key: value) çiftleri halinde süslü parantez {} içinde tutar.", code: 'ogrenci = {"ad": "Ece", "yas": 16}\nprint(ogrenci["ad"])' },
-        { text: "Yeni bir anahtar eklemek veya güncellemek için köşeli parantez kullanırız.", code: 'ogrenci["sinif"] = "10-A"\nprint(ogrenci)' }
-      ],
-      taskPrompt: "'araba = {\"marka\": \"Togg\", \"yil\": 2026}' sözlüğündeki 'marka' değerini print() ile ekrana yazdır.",
-      starterCode: 'araba = {"marka": "Togg", "yil": 2026}\nprint(araba["marka"])',
-      validate: (code, out) => /araba/.test(code) && out.trim() === "Togg"
-    },
-    {
-      title: "10. Turtle Grafik Çizimi",
-      steps: [
-        { text: "Turtle modülü ile ekranda geometrik şekiller çizebiliriz. forward() ileri gider, right() sağa döner.", code: 'import turtle\nt = turtle.Turtle()\nt.forward(100)\nt.right(90)' },
-        { text: "Döngü kullanarak 4 kenarlı bir kareyi sadece 3 satırda çizebiliriz.", code: 'import turtle\nt = turtle.Turtle()\nfor i in range(4):\n    t.forward(80)\n    t.right(90)' }
-      ],
-      taskPrompt: "Turtle kullanarak ekrana bir çizgi çizdir (import turtle, forward ve ekrana onay için print('Çizildi') ekle).",
-      starterCode: 'import turtle\nt = turtle.Turtle()\nt.forward(100)\nprint("Çizildi")',
-      validate: (code, out) => /turtle/.test(code) && /forward/.test(code) && out.includes("Çizildi")
-    }
-  ];
+  /* =========================================================
+     1. SADE & ELİT GİRİŞ EKRANI + YUMUŞAK STÜDYO AÇILIŞI
+     ========================================================= */
+  const STORAGE_KEY = 'pythonhazirlik_user_name';
+  const savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
 
-  function initNpcV3() {
-    // Mevcut eski NPC butonunu ('NPC Video Rehberi') veya kapsayıcısını bul
-    const allButtons = Array.from(document.querySelectorAll('button'));
-    const oldNpcBtn = allButtons.find(b => b.textContent && b.textContent.includes('NPC Video Rehberi'));
-    const oldSummaryBtn = allButtons.find(b => b.textContent && b.textContent.includes('Konu Özeti'));
+  const oldSplash = document.getElementById('welcome-splash');
+  if (oldSplash) oldSplash.style.display = 'none';
 
-    // Eski NPC panelinin içinde bulunduğu ana konteyneri tespit et
-    let targetContainer = null;
-    if (oldNpcBtn && oldNpcBtn.parentElement && oldNpcBtn.parentElement.parentElement) {
-      targetContainer = oldNpcBtn.parentElement.parentElement;
-    } else {
-      targetContainer = document.querySelector('#summary-content, .summary-box, #left-panel .panel-content, .left-pane');
-    }
-
-    if (!targetContainer) return;
-
-    // Eski NPC sekme çubuğunu ve eski NPC kutularını gizle/temizle
-    if (oldNpcBtn && oldNpcBtn.parentElement) {
-      oldNpcBtn.parentElement.style.display = 'none';
-    }
-    targetContainer.querySelectorAll('[id*="npc"]').forEach(el => {
-      if (!el.id.startsWith('npc-v3')) el.style.display = 'none';
-    });
-
-    // Orijinal Konu Özeti içeriğini bul
-    let originalSummaryEl = null;
-    for (const child of Array.from(targetContainer.children)) {
-      if (child.style.display !== 'none' && !child.id.startsWith('npc-v3')) {
-        originalSummaryEl = child;
-        break;
-      }
-    }
-
-    // Önceki V3 kalıntısı varsa kaldır
-    ['npc-v3-tab-bar', 'npc-v3-wrapper', 'npc-v3-drawer'].forEach(id => {
-      const e = document.getElementById(id);
-      if (e) e.remove();
-    });
-
-    const tabBar = document.createElement('div');
-    tabBar.className = 'npc-v3-tab-bar';
-    tabBar.id = 'npc-v3-tab-bar';
-    tabBar.innerHTML = `
-      <button type="button" class="npc-v3-tab-btn active" id="v3-tab-summary">📖 Konu Özeti</button>
-      <button type="button" class="npc-v3-tab-btn" id="v3-tab-npc">🎬 NPC Video Rehberi</button>
-    `;
-
-    const npcWrapper = document.createElement('div');
-    npcWrapper.id = 'npc-v3-wrapper';
-    npcWrapper.innerHTML = `
-      <div class="npc-v3-controls">
-        <select class="npc-v3-select" id="npc-v3-select">
-          ${NPC_LESSONS.map((l, idx) => `<option value="${idx}">${l.title}</option>`).join('')}
-        </select>
-        <div class="npc-v3-btn-group">
-          <button type="button" class="npc-v3-btn primary" id="npc-v3-play">▶ Dersi Başlat</button>
-          <button type="button" class="npc-v3-btn" id="npc-v3-replay">↺ Tekrar</button>
-          <button type="button" class="npc-v3-btn" id="npc-v3-open-task">⚡ Ödev Paneli</button>
-          <button type="button" class="npc-v3-btn" id="npc-v3-next" disabled>Sonraki Ders 🔒</button>
-        </div>
+  const gate = document.createElement('div');
+  gate.id = 'elite-gate-overlay';
+  gate.innerHTML = `
+    <div class="elite-gate-card">
+      <div class="elite-brand-pill">PYTHON STÜDYO</div>
+      <h1 class="elite-main-title">Hoşgeldiniz</h1>
+      <p class="elite-sub-title">Çalışma alanına geçmek için geliştirici adını gir</p>
+      <div class="elite-input-group">
+        <input type="text" id="elite-name-input" class="elite-name-input" placeholder="Adın ve soyadın..." value="${savedName}" autocomplete="off" />
+        <button type="button" id="elite-name-submit" class="elite-name-btn">Başla →</button>
       </div>
+    </div>
+  `;
+  document.body.appendChild(gate);
 
-      <div class="npc-v3-card">
-        <div class="npc-v3-char-row">
-          <div class="npc-v3-avatar" id="npc-v3-avatar">🧙‍♂️</div>
-          <div class="npc-v3-speech" id="npc-v3-speech">
-            <b>▶ Dersi Başlat</b> butonuna bas; konuyu anlatıp bitirince sağda anlık ödev paneli açılacak!
-          </div>
-        </div>
-        <div class="npc-v3-track">
-          <div class="npc-v3-fill" id="npc-v3-progress"></div>
-        </div>
-        <div class="npc-v3-board" id="npc-v3-board"><span class="npc-v3-board-tag">PYTHON TAHTASI</span># Ders başladığında örnek kodlar burada görünecek...</div>
-      </div>
+  function renderHeaderBadge(name) {
+    const actionsBar = document.querySelector('.header-actions');
+    const saveBtn = actionsBar ? actionsBar.querySelector('.save-btn') : null;
+    if (!actionsBar || !saveBtn) return;
 
-      <div class="npc-v3-chat" id="npc-v3-chat">
-        <div class="npc-v3-msg"><b>NPC Usta:</b> Video bittiği an sağ tarafta görev penceren açılır.</div>
-      </div>
-    `;
-
-    targetContainer.insertBefore(tabBar, targetContainer.firstChild);
-    targetContainer.appendChild(npcWrapper);
-
-    // EKRANIN SAĞINDA ANINDA AÇILAN YÜZEN GÖREV ÇEKMECESİ
-    const drawer = document.createElement('div');
-    drawer.id = 'npc-v3-drawer';
-    drawer.innerHTML = `
-      <div class="npc-v3-drawer-head">
-        <span class="npc-v3-drawer-title">⚡ NPC ANLIK UYGULAMA ÖDEVİ</span>
-        <button type="button" class="npc-v3-drawer-close" id="npc-v3-close">✕ Gizle</button>
-      </div>
-      <div class="npc-v3-drawer-desc" id="npc-v3-desc"></div>
-      <textarea class="npc-v3-drawer-editor" id="npc-v3-editor" spellcheck="false"></textarea>
-      <div class="npc-v3-drawer-actions">
-        <button type="button" class="npc-v3-btn primary" id="npc-v3-check">▶ Çalıştır & Kontrol Et</button>
-        <button type="button" class="npc-v3-btn" id="npc-v3-drawer-next" style="display:none;">Sonraki Videoya Geç ⏭</button>
-      </div>
-      <div class="npc-v3-drawer-fb" id="npc-v3-fb"></div>
-    `;
-    document.body.appendChild(drawer);
-
-    const btnSummary = document.getElementById('v3-tab-summary');
-    const btnNpc = document.getElementById('v3-tab-npc');
-
-    btnSummary.addEventListener('click', () => {
-      btnSummary.classList.add('active');
-      btnNpc.classList.remove('active');
-      if (originalSummaryEl) originalSummaryEl.style.display = 'block';
-      npcWrapper.style.display = 'none';
-      drawer.classList.remove('open');
-      if (window.speechSynthesis) window.speechSynthesis.cancel();
-    });
-
-    btnNpc.addEventListener('click', () => {
-      btnNpc.classList.add('active');
-      btnSummary.classList.remove('active');
-      if (originalSummaryEl) originalSummaryEl.style.display = 'none';
-      npcWrapper.style.display = 'flex';
-    });
-
-    const selectEl = document.getElementById('npc-v3-select');
-    const playBtn = document.getElementById('npc-v3-play');
-    const replayBtn = document.getElementById('npc-v3-replay');
-    const openTaskManualBtn = document.getElementById('npc-v3-open-task');
-    const nextBtn = document.getElementById('npc-v3-next');
-    const avatarEl = document.getElementById('npc-v3-avatar');
-    const speechEl = document.getElementById('npc-v3-speech');
-    const boardEl = document.getElementById('npc-v3-board');
-    const progressEl = document.getElementById('npc-v3-progress');
-    const chatLogEl = document.getElementById('npc-v3-chat');
-
-    const drawerCloseBtn = document.getElementById('npc-v3-close');
-    const drawerDesc = document.getElementById('npc-v3-desc');
-    const drawerEditor = document.getElementById('npc-v3-editor');
-    const drawerCheckBtn = document.getElementById('npc-v3-check');
-    const drawerNextBtn = document.getElementById('npc-v3-drawer-next');
-    const drawerFeedback = document.getElementById('npc-v3-fb');
-
-    let currentLessonIdx = 0;
-    let playTimer = null;
-    let typeTimer = null;
-
-    drawerCloseBtn.addEventListener('click', () => drawer.classList.remove('open'));
-    openTaskManualBtn.addEventListener('click', () => openRightDrawer(NPC_LESSONS[currentLessonIdx]));
-
-    function speakText(text) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'tr-TR';
-      utter.rate = 1.02;
-      window.speechSynthesis.speak(utter);
-    }
-
-    function addChatMessage(htmlText, isTask) {
-      const div = document.createElement('div');
-      div.className = 'npc-v3-msg' + (isTask ? ' task-alert' : '');
-      div.innerHTML = htmlText;
-      chatLogEl.appendChild(div);
-      chatLogEl.scrollTop = chatLogEl.scrollHeight;
-    }
-
-    function typeCodeOnBoard(codeText) {
-      clearInterval(typeTimer);
-      boardEl.innerHTML = '<span class="npc-v3-board-tag">PYTHON TAHTASI</span>';
-      const codeNode = document.createTextNode('');
-      boardEl.appendChild(codeNode);
-      let i = 0;
-      typeTimer = setInterval(() => {
-        if (i < codeText.length) {
-          codeNode.textContent += codeText[i++];
-        } else {
-          clearInterval(typeTimer);
+    let badge = document.getElementById('header-user-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.id = 'header-user-badge';
+      badge.className = 'header-user-badge';
+      badge.title = 'İsmini değiştirmek için tıkla';
+      badge.onclick = function () {
+        const yeni = prompt('Stüdyoda görünecek adını gir:', localStorage.getItem(STORAGE_KEY) || '');
+        if (yeni && yeni.trim()) {
+          localStorage.setItem(STORAGE_KEY, yeni.trim());
+          renderHeaderBadge(yeni.trim());
         }
-      }, 20);
+      };
+      actionsBar.insertBefore(badge, saveBtn);
     }
-
-    function stopPlayback() {
-      clearTimeout(playTimer);
-      clearInterval(typeTimer);
-      avatarEl.classList.remove('speaking');
-      if (window.speechSynthesis) window.speechSynthesis.cancel();
-    }
-
-    function openRightDrawer(lesson) {
-      avatarEl.classList.remove('speaking');
-      speechEl.innerHTML = `<b>🎯 Sıra Sende:</b> ${lesson.taskPrompt}`;
-      addChatMessage(`<b>🎯 Ödev Açıldı:</b> ${lesson.taskPrompt}`, true);
-      speakText("Şimdi sıra sende! Sağda açılan panelde ödevi çöz ve kontrol et.");
-
-      drawerDesc.textContent = lesson.taskPrompt;
-      drawerEditor.value = lesson.starterCode;
-      drawerFeedback.className = 'npc-v3-drawer-fb';
-      drawerFeedback.textContent = '';
-      drawerNextBtn.style.display = 'none';
-      drawer.classList.add('open');
-      setTimeout(() => drawerEditor.focus(), 200);
-    }
-
-    function startLesson(idx) {
-      stopPlayback();
-      currentLessonIdx = idx;
-      selectEl.value = String(idx);
-      const lesson = NPC_LESSONS[idx];
-
-      nextBtn.disabled = true;
-      nextBtn.classList.remove('next-unlocked');
-      nextBtn.textContent = 'Sonraki Ders 🔒';
-      drawer.classList.remove('open');
-      progressEl.style.width = '0%';
-      chatLogEl.innerHTML = `<div class="npc-v3-msg"><b>NPC Usta:</b> "${lesson.title}" anlatımı başladı...</div>`;
-
-      let stepIdx = 0;
-      function runStep() {
-        if (stepIdx >= lesson.steps.length) {
-          progressEl.style.width = '100%';
-          openRightDrawer(lesson);
-          return;
-        }
-        const step = lesson.steps[stepIdx];
-        avatarEl.classList.add('speaking');
-        speechEl.textContent = step.text;
-        addChatMessage(`<b>NPC Usta:</b> ${step.text}`, false);
-        typeCodeOnBoard(step.code);
-        speakText(step.text);
-
-        progressEl.style.width = `${Math.round(((stepIdx + 1) / lesson.steps.length) * 85)}%`;
-        stepIdx++;
-        playTimer = setTimeout(runStep, 4800);
-      }
-
-      runStep();
-    }
-
-    playBtn.addEventListener('click', () => startLesson(Number(selectEl.value)));
-    replayBtn.addEventListener('click', () => startLesson(currentLessonIdx));
-    selectEl.addEventListener('change', () => startLesson(Number(selectEl.value)));
-
-    function goToNextLesson() {
-      const nextIdx = (currentLessonIdx + 1) % NPC_LESSONS.length;
-      startLesson(nextIdx);
-    }
-
-    nextBtn.addEventListener('click', () => {
-      if (!nextBtn.disabled) goToNextLesson();
-    });
-    drawerNextBtn.addEventListener('click', goToNextLesson);
-
-    drawerCheckBtn.addEventListener('click', async () => {
-      const lesson = NPC_LESSONS[currentLessonIdx];
-      const userCode = drawerEditor.value;
-
-      if (!window.pyodide) {
-        drawerFeedback.className = 'npc-v3-drawer-fb err';
-        drawerFeedback.textContent = 'Python motoru henüz yükleniyor, birkaç saniye bekleyip tekrar dene.';
-        return;
-      }
-
-      try {
-        const mockList = JSON.stringify(lesson.mockInputs || ["Test"]);
-        window.pyodide.runPython(`
-import sys, io, builtins
-_npc_out = io.StringIO()
-sys.stdout = _npc_out
-sys.stderr = _npc_out
-_mock_vals = ${mockList}
-def _npc_mock_input(prompt=""):
-    print(prompt, end="")
-    return _mock_vals.pop(0) if _mock_vals else "Python"
-builtins.input = _npc_mock_input
-`);
-        await window.pyodide.runPythonAsync(userCode);
-        const output = window.pyodide.runPython('_npc_out.getvalue()');
-
-        if (lesson.validate(userCode, output)) {
-          drawerFeedback.className = 'npc-v3-drawer-fb ok';
-          drawerFeedback.textContent = `✅ Harika! Çıktın: "${output.trim()}" — Ödevi başardın, şimdi sonraki videoya geçebilirsin!`;
-          addChatMessage(`<b>✅ Tamamlandı!</b> Ödevi doğru çözdün.`, true);
-          speakText("Harika! Doğru çözdün, şimdi sonraki videoya geçebilirsin.");
-
-          nextBtn.disabled = false;
-          nextBtn.classList.add('next-unlocked');
-          nextBtn.textContent = 'Sonraki Ders ⏭';
-
-          drawerNextBtn.style.display = 'inline-block';
-          drawerNextBtn.className = 'npc-v3-btn next-unlocked';
-        } else {
-          drawerFeedback.className = 'npc-v3-drawer-fb err';
-          drawerFeedback.textContent = `❌ Çıktın: "${output.trim() || 'Çıktı yok'}". Görev açıklamasına göre tekrar düzenle!`;
-        }
-      } catch (err) {
-        drawerFeedback.className = 'npc-v3-drawer-fb err';
-        drawerFeedback.textContent = '⚠️ Kod Hatası: ' + err.message.split('\n').slice(-2).join(' ');
-      }
-    });
+    badge.innerHTML = `<span style="color:var(--accent-gold, #eab308);">◆</span> ${name}`;
   }
 
-  // Eski NPC scripti DOM'u kurduktan hemen sonra devreye gir
-  setTimeout(initNpcV3, 450);
+  if (savedName) renderHeaderBadge(savedName);
+
+  const inputEl = document.getElementById('elite-name-input');
+  const submitBtn = document.getElementById('elite-name-submit');
+  setTimeout(() => inputEl && inputEl.focus(), 200);
+
+  function enterStudio() {
+    const val = (inputEl.value || '').trim();
+    if (!val) {
+      inputEl.style.borderColor = '#f43f5e';
+      inputEl.focus();
+      return;
+    }
+    localStorage.setItem(STORAGE_KEY, val);
+    renderHeaderBadge(val);
+    gate.classList.add('gate-opening');
+    setTimeout(() => gate.remove(), 900);
+  }
+
+  submitBtn.addEventListener('click', enterStudio);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      enterStudio();
+    }
+  });
+
+  /* =========================================================
+     2. ESKİ VİDEO PANELİ İÇİN KESİKSİZ AI SES & TELAFFUZ MOTORU
+     ========================================================= */
+  if ('speechSynthesis' in window) {
+    let bestTurkishVoice = null;
+
+    function pickBestTurkishVoice() {
+      const voices = window.speechSynthesis.getVoices() || [];
+      const trVoices = voices.filter(v => (v.lang || '').toLowerCase().includes('tr'));
+      if (!trVoices.length) return;
+
+      // En doğal yapay zeka seslerini önceliklendir (Google / Microsoft Natural / Emel / Yelda)
+      bestTurkishVoice =
+        trVoices.find(v => /google|natural|neural|emel|yelda/i.test(v.name)) ||
+        trVoices[0];
+    }
+
+    pickBestTurkishVoice();
+    window.speechSynthesis.onvoiceschanged = pickBestTurkishVoice;
+
+    // İngilizce Python terimlerini Türkçe fonetik telaffuza çevir ve kesik duraklamaları temizle
+    function polishTurkishPronunciation(rawText) {
+      if (!rawText) return '';
+      return rawText
+        .replace(/print\s*\(\s*\)/gi, 'pirint fonksiyonu')
+        .replace(/\bprint\b/gi, 'pirint')
+        .replace(/input\s*\(\s*\)/gi, 'input fonksiyonu')
+        .replace(/\binput\b/gi, 'input')
+        .replace(/range\s*\(\s*\)/gi, 'reync fonksiyonu')
+        .replace(/\brange\b/gi, 'reync')
+        .replace(/type\s*\(\s*\)/gi, 'tayp fonksiyonu')
+        .replace(/\btype\b/gi, 'tayp')
+        .replace(/\.append\s*\(\s*\)/gi, 'nokta epend')
+        .replace(/\bappend\b/gi, 'epend')
+        .replace(/\bwhile\b/gi, 'vayl')
+        .replace(/\bfor\b/gi, 'for')
+        .replace(/\belif\b/gi, 'elif')
+        .replace(/\belse\b/gi, 'els')
+        .replace(/\bdef\b/gi, 'def')
+        .replace(/\breturn\b/gi, 'ritörn')
+        .replace(/\bbreak\b/gi, 'bireyk')
+        .replace(/\bcontinue\b/gi, 'kontinyu')
+        .replace(/\bTrue\b/g, 'Turu')
+        .replace(/\bFalse\b/g, 'Fols')
+        .replace(/\bfloat\b/gi, 'fıloat')
+        .replace(/\bint\b/gi, 'int')
+        .replace(/\bstr\b/gi, 'sıtır')
+        .replace(/\bturtle\b/gi, 'törtıl')
+        .replace(/\bforward\b/gi, 'forvırd')
+        .replace(/\bright\b/gi, 'rayt')
+        .replace(/\bleft\b/gi, 'left')
+        .replace(/\bPython\b/gi, 'Paytın')
+        .replace(/[#*_`~]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    // Tarayıcının uzun metinlerde sesi kesmesini önleyen akıcı kuyruk sistemi
+    const originalSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis);
+    let keepAliveTimer = null;
+
+    window.speechSynthesis.speak = function (utterance) {
+      if (!utterance) return;
+      pickBestTurkishVoice();
+
+      utterance.text = polishTurkishPronunciation(utterance.text);
+      utterance.lang = 'tr-TR';
+      if (bestTurkishVoice) {
+        utterance.voice = bestTurkishVoice;
+      }
+      // Daha akıcı, doğal ve kesintisiz konuşma hızı ve tonu
+      utterance.rate = 0.98;
+      utterance.pitch = 1.02;
+      utterance.volume = 1;
+
+      clearInterval(keepAliveTimer);
+      utterance.onstart = function () {
+        keepAliveTimer = setInterval(() => {
+          if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.resume();
+          } else {
+            clearInterval(keepAliveTimer);
+          }
+        }, 9000);
+      };
+      utterance.onend = utterance.onerror = function () {
+        clearInterval(keepAliveTimer);
+      };
+
+      originalSpeak(utterance);
+    };
+  }
 })();
 </script>
 </body>
