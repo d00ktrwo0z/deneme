@@ -2764,5 +2764,185 @@ async def _live_input(prompt=""):
   };
 })();
 </script>
+  <!-- GİRİŞ EKRANI İSİM SORMA & ÜST MENÜ İSİM ROZETİ EKLENTİSİ -->
+<style>
+  .elite-name-box {
+    margin-top: 26px;
+    padding: 20px 24px;
+    width: min(390px, 90vw);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(124, 58, 237, 0.24) 48%, rgba(15, 22, 36, 0.92) 100%);
+    border: 1.5px solid rgba(196, 181, 253, 0.55);
+    border-left: 4px solid #eab308;
+    border-radius: 3px;
+    box-shadow: 0 18px 45px rgba(109, 40, 217, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: eliteBoxIn 0.6s ease forwards 0.45s;
+  }
+  @keyframes eliteBoxIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .elite-name-label {
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e9d5ff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .elite-name-row {
+    display: flex;
+    gap: 8px;
+  }
+  .elite-name-input {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(245, 243, 255, 0.96), rgba(237, 233, 254, 0.9));
+    color: #1e1b4b;
+    border: 1.5px solid #a855f7;
+    border-radius: 2px;
+    padding: 9px 12px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .elite-name-input::placeholder {
+    color: #6b21a8;
+    opacity: 0.65;
+    font-weight: 500;
+  }
+  .elite-name-input:focus {
+    border-color: #eab308;
+    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.28);
+  }
+  .elite-name-btn {
+    background: linear-gradient(135deg, #9333ea 0%, #6b21a8 100%);
+    color: #ffffff;
+    border: 1.5px solid rgba(234, 179, 8, 0.75);
+    border-radius: 2px;
+    padding: 9px 16px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .elite-name-btn:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+  }
+  .header-user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border-radius: 3px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(255, 255, 255, 0.08));
+    border: 1px solid rgba(168, 85, 247, 0.55);
+    border-left: 3px solid var(--accent-gold);
+    color: var(--text-primary);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .header-user-badge:hover {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+  }
+</style>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'pythonhazirlik_user_name';
+  let savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
+
+  // Üst menüde 💾 Kaydet butonunun hemen yanına isim rozetini yerleştir
+  function renderHeaderBadge(name) {
+    const actionsBar = document.querySelector('.header-actions');
+    const saveBtn = actionsBar ? actionsBar.querySelector('.save-btn') : null;
+    if (!actionsBar || !saveBtn) return;
+
+    let badge = document.getElementById('header-user-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.id = 'header-user-badge';
+      badge.className = 'header-user-badge';
+      badge.title = 'İsmini değiştirmek için tıkla';
+      badge.onclick = function () {
+        const yeni = prompt('Stüdyoda görünecek adını gir:', localStorage.getItem(STORAGE_KEY) || '');
+        if (yeni && yeni.trim()) {
+          localStorage.setItem(STORAGE_KEY, yeni.trim());
+          renderHeaderBadge(yeni.trim());
+        }
+      };
+      actionsBar.insertBefore(badge, saveBtn);
+    }
+    badge.innerHTML = `<span style="color:var(--accent-gold);">◆</span> ${name}`;
+  }
+
+  if (savedName) {
+    renderHeaderBadge(savedName);
+  }
+
+  // Giriş ekranını (splash) bul ve keskin hatlı elit isim kutusunu içine yerleştir
+  const splash = document.getElementById('welcome-splash');
+  if (!splash) return;
+
+  // Orijinal otomatik kapanmayı durdurmak için splash elemanını klonlayıp tazele
+  const freshSplash = splash.cloneNode(true);
+  splash.parentNode.replaceChild(freshSplash, splash);
+
+  const box = document.createElement('div');
+  box.className = 'elite-name-box';
+  box.innerHTML = `
+    <div class="elite-name-label">
+      <span>Geliştirici Kimliği</span>
+      <span style="color:#eab308;">PYTHON STÜDYO</span>
+    </div>
+    <div class="elite-name-row">
+      <input type="text" id="elite-name-input" class="elite-name-input" placeholder="Adını ve soyadını yaz..." value="${savedName}" autocomplete="off" />
+      <button type="button" id="elite-name-submit" class="elite-name-btn">Giriş ↵</button>
+    </div>
+  `;
+  freshSplash.appendChild(box);
+
+  const inputEl = document.getElementById('elite-name-input');
+  const submitBtn = document.getElementById('elite-name-submit');
+
+  setTimeout(() => {
+    if (inputEl) inputEl.focus();
+  }, 550);
+
+  function completeEntrance() {
+    const val = (inputEl.value || '').trim() || savedName || 'Misafir';
+    localStorage.setItem(STORAGE_KEY, val);
+    renderHeaderBadge(val);
+    freshSplash.classList.add('hide-splash');
+    setTimeout(() => {
+      if (freshSplash && freshSplash.parentNode) freshSplash.remove();
+    }, 850);
+  }
+
+  submitBtn.addEventListener('click', completeEntrance);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      completeEntrance();
+    }
+  });
+})();
+</script>
 </body>
 </html>
