@@ -2764,10 +2764,23 @@ async def _live_input(prompt=""):
   };
 })();
 </script>
-<!-- GİRİŞ EKRANI İSİM SORMA & ÜST MENÜ İSİM ROZETİ EKLENTİSİ (SABİT EKRAN) -->
+<!-- GİRİŞ EKRANI İSİM SORMA & ÜST MENÜ İSİM ROZETİ (KESİN ÇÖZÜM) -->
 <style>
-  #welcome-splash {
-    z-index: 999999 !important;
+  #elite-gate-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at top right, #1e1b4b, #060911 75%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2147483647;
+    transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.75s ease;
+  }
+  #elite-gate-overlay.gate-closing {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
   }
   .elite-name-box {
     margin-top: 26px;
@@ -2782,12 +2795,6 @@ async def _live_input(prompt=""):
     display: flex;
     flex-direction: column;
     gap: 11px;
-    opacity: 0;
-    transform: translateY(14px);
-    animation: eliteBoxIn 0.55s ease forwards 0.35s;
-  }
-  @keyframes eliteBoxIn {
-    to { opacity: 1; transform: translateY(0); }
   }
   .elite-name-label {
     font-size: 0.76rem;
@@ -2814,12 +2821,6 @@ async def _live_input(prompt=""):
     font-size: 0.88rem;
     font-weight: 700;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .elite-name-input::placeholder {
-    color: #6b21a8;
-    opacity: 0.65;
-    font-weight: 500;
   }
   .elite-name-input:focus {
     border-color: #eab308;
@@ -2836,7 +2837,6 @@ async def _live_input(prompt=""):
     letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s ease;
     white-space: nowrap;
   }
   .elite-name-btn:hover {
@@ -2847,36 +2847,53 @@ async def _live_input(prompt=""):
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 9px;
+    padding: 4px 8px;
     border-radius: 3px;
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(255, 255, 255, 0.08));
     border: 1px solid rgba(168, 85, 247, 0.55);
     border-left: 3px solid var(--accent-gold);
     color: var(--text-primary);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
-    letter-spacing: 0.02em;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    flex-shrink: 0;
   }
-  .header-user-badge:hover {
-    border-color: var(--accent-gold);
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+  header {
+    overflow-x: auto !important;
+  }
+  header::-webkit-scrollbar {
+    display: none;
   }
 </style>
 
 <script>
 (function () {
   const STORAGE_KEY = 'pythonhazirlik_user_name';
-  let savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
-  let entered = false;
+  const savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
 
-  // Ana kodun kurduğu 2.1 saniyelik otomatik kaydırma zamanlayıcısını sıfırla
-  const maxTimerId = window.setTimeout(function () {}, 0);
-  for (let i = 1; i <= maxTimerId; i++) {
-    window.clearTimeout(i);
-  }
+  // Eski otomatik kapanan splash varsa gizle, kontrolü yeni perdeye al
+  const oldSplash = document.getElementById('welcome-splash');
+  if (oldSplash) oldSplash.style.display = 'none';
+
+  // Tamamen bağımsız, hiçbir zamanlayıcının silemeyeceği yeni giriş ekranı
+  const gate = document.createElement('div');
+  gate.id = 'elite-gate-overlay';
+  gate.innerHTML = `
+    <h1 class="splash-main-title" style="opacity:1; transform:skewX(-6deg);">Python Stüdyoya</h1>
+    <p class="splash-sub-gold" style="opacity:1; transform:none;">Hoşgeldiniz</p>
+    <div class="elite-name-box">
+      <div class="elite-name-label">
+        <span>Geliştirici Kimliği</span>
+        <span style="color:#eab308;">PYTHON STÜDYO</span>
+      </div>
+      <div class="elite-name-row">
+        <input type="text" id="elite-name-input" class="elite-name-input" placeholder="Adını ve soyadını yaz..." value="${savedName}" autocomplete="off" />
+        <button type="button" id="elite-name-submit" class="elite-name-btn">Giriş ↵</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(gate);
 
   function renderHeaderBadge(name) {
     const actionsBar = document.querySelector('.header-actions');
@@ -2901,74 +2918,30 @@ async def _live_input(prompt=""):
     badge.innerHTML = `<span style="color:var(--accent-gold);">◆</span> ${name}`;
   }
 
-  if (savedName) {
-    renderHeaderBadge(savedName);
-  }
-
-  // Giriş ekranını oluştur veya mevcut olanı kilitle
-  let splash = document.getElementById('welcome-splash');
-  if (!splash) {
-    splash = document.createElement('div');
-    splash.id = 'welcome-splash';
-    splash.innerHTML = `
-      <h1 class="splash-main-title">Python Stüdyoya</h1>
-      <p class="splash-sub-gold">Hoşgeldiniz</p>
-    `;
-    document.body.appendChild(splash);
-  }
-  splash.classList.remove('hide-splash');
-
-  // Herhangi bir dış kod hide-splash eklemeye kalkarsa engelle
-  const lockObserver = new MutationObserver(() => {
-    if (!entered && splash.classList.contains('hide-splash')) {
-      splash.classList.remove('hide-splash');
-    }
-  });
-  lockObserver.observe(splash, { attributes: true, attributeFilter: ['class'] });
-
-  const box = document.createElement('div');
-  box.className = 'elite-name-box';
-  box.innerHTML = `
-    <div class="elite-name-label">
-      <span>Geliştirici Kimliği</span>
-      <span style="color:#eab308;">PYTHON STÜDYO</span>
-    </div>
-    <div class="elite-name-row">
-      <input type="text" id="elite-name-input" class="elite-name-input" placeholder="Adını ve soyadını yaz..." value="${savedName}" autocomplete="off" />
-      <button type="button" id="elite-name-submit" class="elite-name-btn">Giriş ↵</button>
-    </div>
-  `;
-  splash.appendChild(box);
+  if (savedName) renderHeaderBadge(savedName);
 
   const inputEl = document.getElementById('elite-name-input');
   const submitBtn = document.getElementById('elite-name-submit');
+  setTimeout(() => inputEl && inputEl.focus(), 100);
 
-  setTimeout(() => {
-    if (inputEl) inputEl.focus();
-  }, 450);
-
-  function completeEntrance() {
+  function enterStudio() {
     const val = (inputEl.value || '').trim();
     if (!val) {
-      inputEl.focus();
       inputEl.style.borderColor = '#f43f5e';
+      inputEl.focus();
       return;
     }
-    entered = true;
-    lockObserver.disconnect();
     localStorage.setItem(STORAGE_KEY, val);
     renderHeaderBadge(val);
-    splash.classList.add('hide-splash');
-    setTimeout(() => {
-      if (splash && splash.parentNode) splash.remove();
-    }, 850);
+    gate.classList.add('gate-closing');
+    setTimeout(() => gate.remove(), 800);
   }
 
-  submitBtn.addEventListener('click', completeEntrance);
+  submitBtn.addEventListener('click', enterStudio);
   inputEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      completeEntrance();
+      enterStudio();
     }
   });
 })();
