@@ -3032,19 +3032,19 @@ async def _live_input(prompt=""):
   });
 })();
 </script>
- <!-- NPC VİDEO REHBERİ & SAĞDA ANLIK AÇILAN GÖREV ÇEKMECESİ (V2) -->
+ <!-- NPC VİDEO REHBERİ & SAĞDA ANLIK AÇILAN GÖREV ÇEKMECESİ (V3 - TAM UYUMLU) -->
 <style>
-  .npc-tab-bar {
+  .npc-v3-tab-bar {
     display: flex;
     gap: 8px;
     margin-bottom: 12px;
-    border-bottom: 1.5px solid var(--border-line);
+    border-bottom: 1.5px solid var(--border-line, #334155);
     padding-bottom: 8px;
   }
-  .npc-tab-btn {
-    background: var(--bg-panel);
-    color: var(--text-muted);
-    border: 1.5px solid var(--border-line);
+  .npc-v3-tab-btn {
+    background: var(--bg-panel, #1e293b);
+    color: var(--text-muted, #94a3b8);
+    border: 1.5px solid var(--border-line, #334155);
     border-radius: 6px;
     padding: 6px 14px;
     font-size: 0.8rem;
@@ -3052,32 +3052,32 @@ async def _live_input(prompt=""):
     cursor: pointer;
     transition: all 0.2s;
   }
-  .npc-tab-btn.active {
-    background: linear-gradient(135deg, var(--accent-purple), #6d28d9);
+  .npc-v3-tab-btn.active {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
     color: #fff;
-    border-color: var(--accent-gold);
+    border-color: #eab308;
     box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
   }
-  #npc-studio-wrapper {
+  #npc-v3-wrapper {
     display: none;
     flex-direction: column;
     gap: 10px;
   }
-  .npc-top-controls {
+  .npc-v3-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    background: var(--bg-panel);
+    background: var(--bg-panel, #1e293b);
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1.5px solid var(--border-line);
+    border: 1.5px solid var(--border-line, #334155);
   }
-  .npc-topic-select {
-    background: var(--bg-editor);
-    color: var(--text-primary);
-    border: 1.5px solid var(--accent-purple);
+  .npc-v3-select {
+    background: var(--bg-editor, #0f172a);
+    color: var(--text-primary, #f8fafc);
+    border: 1.5px solid #8b5cf6;
     border-radius: 6px;
     padding: 6px 9px;
     font-size: 0.8rem;
@@ -3085,16 +3085,16 @@ async def _live_input(prompt=""):
     max-width: 100%;
     outline: none;
   }
-  .npc-ctrl-group {
+  .npc-v3-btn-group {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
   }
-  .npc-btn {
-    background: var(--bg-editor);
-    color: var(--text-primary);
-    border: 1.5px solid var(--border-line);
+  .npc-v3-btn {
+    background: var(--bg-editor, #0f172a);
+    color: var(--text-primary, #f8fafc);
+    border: 1.5px solid var(--border-line, #334155);
     border-radius: 6px;
     padding: 6px 11px;
     font-size: 0.77rem;
@@ -3102,72 +3102,72 @@ async def _live_input(prompt=""):
     cursor: pointer;
     transition: 0.2s;
   }
-  .npc-btn:hover {
-    border-color: var(--accent-gold);
+  .npc-v3-btn:hover {
+    border-color: #eab308;
   }
-  .npc-btn.primary {
+  .npc-v3-btn.primary {
     background: linear-gradient(135deg, #9333ea, #6b21a8);
     color: #fff;
-    border-color: var(--accent-gold);
+    border-color: #eab308;
   }
-  .npc-btn.next-unlocked {
+  .npc-v3-btn.next-unlocked {
     background: linear-gradient(135deg, #eab308, #ca8a04);
     color: #0f172a;
     border-color: #fef08a;
     font-weight: 900;
-    animation: pulseNext 1.4s infinite;
+    animation: pulseNextV3 1.4s infinite;
   }
-  @keyframes pulseNext {
+  @keyframes pulseNextV3 {
     0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.6); }
     50% { box-shadow: 0 0 14px 3px rgba(234, 179, 8, 0.35); }
   }
-  .npc-video-card {
-    background: radial-gradient(circle at top left, rgba(124, 58, 237, 0.24), var(--bg-editor) 78%);
-    border: 1.5px solid var(--border-line);
+  .npc-v3-card {
+    background: radial-gradient(circle at top left, rgba(124, 58, 237, 0.24), #0f172a 78%);
+    border: 1.5px solid #334155;
     border-radius: 10px;
     padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  .npc-character-row {
+  .npc-v3-char-row {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .npc-avatar {
+  .npc-v3-avatar {
     width: 50px;
     height: 50px;
     border-radius: 12px;
     background: linear-gradient(135deg, #7e22ce, #3b0764);
-    border: 2px solid var(--accent-gold);
+    border: 2px solid #eab308;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
     flex-shrink: 0;
   }
-  .npc-avatar.speaking {
-    animation: npcBounce 0.45s infinite alternate;
+  .npc-v3-avatar.speaking {
+    animation: npcBounceV3 0.45s infinite alternate;
     box-shadow: 0 0 18px rgba(234, 179, 8, 0.55);
   }
-  @keyframes npcBounce {
+  @keyframes npcBounceV3 {
     from { transform: translateY(0) scale(1); }
     to { transform: translateY(-3px) scale(1.04); }
   }
-  .npc-speech-bubble {
+  .npc-v3-speech {
     flex: 1;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.92);
     border: 1.5px solid rgba(168, 85, 247, 0.55);
-    border-left: 4px solid var(--accent-gold);
+    border-left: 4px solid #eab308;
     border-radius: 8px;
     padding: 9px 11px;
     font-size: 0.83rem;
     line-height: 1.45;
-    color: var(--text-primary);
+    color: #f8fafc;
     min-height: 54px;
   }
-  .npc-blackboard {
+  .npc-v3-board {
     background: #090d16;
     border: 1.5px solid #334155;
     border-radius: 8px;
@@ -3175,97 +3175,97 @@ async def _live_input(prompt=""):
     font-family: 'Consolas', monospace;
     font-size: 0.82rem;
     color: #e2e8f0;
-    min-height: 125px;
+    min-height: 120px;
     white-space: pre-wrap;
     position: relative;
   }
-  .npc-board-tag {
+  .npc-v3-board-tag {
     position: absolute;
     top: 6px;
     right: 10px;
     font-size: 0.65rem;
-    color: var(--accent-gold);
+    color: #eab308;
     font-weight: 800;
   }
-  .npc-progress-track {
+  .npc-v3-track {
     height: 6px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 99px;
     overflow: hidden;
   }
-  .npc-progress-fill {
+  .npc-v3-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, var(--accent-purple), var(--accent-gold));
+    background: linear-gradient(90deg, #8b5cf6, #eab308);
     transition: width 0.35s ease;
   }
-  .npc-chat-log {
-    background: var(--bg-editor);
-    border: 1.5px solid var(--border-line);
+  .npc-v3-chat {
+    background: #0f172a;
+    border: 1.5px solid #334155;
     border-radius: 8px;
     padding: 9px;
-    max-height: 125px;
+    max-height: 120px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 6px;
     font-size: 0.79rem;
   }
-  .npc-msg {
+  .npc-v3-msg {
     padding: 6px 9px;
     border-radius: 6px;
     background: rgba(139, 92, 246, 0.14);
-    border-left: 3px solid var(--accent-purple);
-    color: var(--text-primary);
+    border-left: 3px solid #8b5cf6;
+    color: #f8fafc;
     line-height: 1.4;
   }
-  .npc-msg.task-alert {
+  .npc-v3-msg.task-alert {
     background: rgba(234, 179, 8, 0.18);
-    border-left-color: var(--accent-gold);
+    border-left-color: #eab308;
     font-weight: 700;
   }
 
   /* EKRANIN SAĞINDA ANINDA AÇILAN YÜZEN ÖDEV PANELİ */
-  #npc-floating-task-drawer {
+  #npc-v3-drawer {
     position: fixed;
     top: 74px;
     right: 18px;
-    width: min(410px, 92vw);
-    background: linear-gradient(155deg, rgba(30, 27, 75, 0.98) 0%, rgba(11, 15, 26, 0.99) 100%);
+    width: min(420px, 92vw);
+    background: linear-gradient(155deg, rgba(30, 27, 75, 0.99) 0%, rgba(11, 15, 26, 0.99) 100%);
     border: 2px solid #eab308;
     border-left: 5px solid #a855f7;
     border-radius: 10px;
     padding: 16px;
-    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.75), 0 0 25px rgba(234, 179, 8, 0.3);
-    z-index: 2147483640;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.8), 0 0 28px rgba(234, 179, 8, 0.35);
+    z-index: 2147483645;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    transform: translateX(120%);
+    transform: translateX(130%);
     opacity: 0;
     pointer-events: none;
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
   }
-  #npc-floating-task-drawer.open {
+  #npc-v3-drawer.open {
     transform: translateX(0);
     opacity: 1;
     pointer-events: auto;
   }
-  .npc-drawer-header {
+  .npc-v3-drawer-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid rgba(234, 179, 8, 0.3);
     padding-bottom: 8px;
   }
-  .npc-drawer-title {
+  .npc-v3-drawer-title {
     font-size: 0.82rem;
     font-weight: 900;
     color: #eab308;
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .npc-drawer-close {
+  .npc-v3-drawer-close {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.25);
     color: #cbd5e1;
@@ -3274,7 +3274,7 @@ async def _live_input(prompt=""):
     font-size: 0.75rem;
     cursor: pointer;
   }
-  .npc-drawer-desc {
+  .npc-v3-drawer-desc {
     font-size: 0.85rem;
     color: #f3e8ff;
     line-height: 1.48;
@@ -3283,7 +3283,7 @@ async def _live_input(prompt=""):
     border-radius: 6px;
     border-left: 3px solid #eab308;
   }
-  .npc-drawer-editor {
+  .npc-v3-drawer-editor {
     width: 100%;
     min-height: 105px;
     background: #060911;
@@ -3297,17 +3297,17 @@ async def _live_input(prompt=""):
     resize: vertical;
     outline: none;
   }
-  .npc-drawer-editor:focus {
+  .npc-v3-drawer-editor:focus {
     border-color: #eab308;
     box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.22);
   }
-  .npc-drawer-actions {
+  .npc-v3-drawer-actions {
     display: flex;
     gap: 8px;
     justify-content: space-between;
     align-items: center;
   }
-  .npc-drawer-feedback {
+  .npc-v3-drawer-fb {
     font-size: 0.81rem;
     font-weight: 700;
     padding: 8px 10px;
@@ -3315,13 +3315,13 @@ async def _live_input(prompt=""):
     display: none;
     line-height: 1.4;
   }
-  .npc-drawer-feedback.ok {
+  .npc-v3-drawer-fb.ok {
     display: block;
     background: rgba(16, 185, 129, 0.2);
     border: 1px solid #10b981;
     color: #6ee7b7;
   }
-  .npc-drawer-feedback.err {
+  .npc-v3-drawer-fb.err {
     display: block;
     background: rgba(244, 63, 94, 0.2);
     border: 1px solid #f43f5e;
@@ -3435,252 +3435,267 @@ async def _live_input(prompt=""):
     }
   ];
 
-  // Eski tüm NPC kalıntılarını temizle
-  ['npc-tab-bar', 'npc-studio-wrapper', 'npc-floating-task-drawer'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  });
+  function initNpcV3() {
+    // Mevcut eski NPC butonunu ('NPC Video Rehberi') veya kapsayıcısını bul
+    const allButtons = Array.from(document.querySelectorAll('button'));
+    const oldNpcBtn = allButtons.find(b => b.textContent && b.textContent.includes('NPC Video Rehberi'));
+    const oldSummaryBtn = allButtons.find(b => b.textContent && b.textContent.includes('Konu Özeti'));
 
-  const summaryPane = document.getElementById('summary-content') || document.querySelector('.summary-box') || document.querySelector('#left-panel .panel-content');
-  if (!summaryPane) return;
+    // Eski NPC panelinin içinde bulunduğu ana konteyneri tespit et
+    let targetContainer = null;
+    if (oldNpcBtn && oldNpcBtn.parentElement && oldNpcBtn.parentElement.parentElement) {
+      targetContainer = oldNpcBtn.parentElement.parentElement;
+    } else {
+      targetContainer = document.querySelector('#summary-content, .summary-box, #left-panel .panel-content, .left-pane');
+    }
 
-  const oldWrapper = document.getElementById('original-summary-wrapper');
-  if (oldWrapper) {
-    while (oldWrapper.firstChild) summaryPane.appendChild(oldWrapper.firstChild);
-    oldWrapper.remove();
-  }
-  summaryPane.querySelectorAll('[id*="npc"]').forEach(el => el.remove());
+    if (!targetContainer) return;
 
-  const originalSummaryWrapper = document.createElement('div');
-  originalSummaryWrapper.id = 'original-summary-wrapper';
-  while (summaryPane.firstChild) {
-    originalSummaryWrapper.appendChild(summaryPane.firstChild);
-  }
+    // Eski NPC sekme çubuğunu ve eski NPC kutularını gizle/temizle
+    if (oldNpcBtn && oldNpcBtn.parentElement) {
+      oldNpcBtn.parentElement.style.display = 'none';
+    }
+    targetContainer.querySelectorAll('[id*="npc"]').forEach(el => {
+      if (!el.id.startsWith('npc-v3')) el.style.display = 'none';
+    });
 
-  const tabBar = document.createElement('div');
-  tabBar.className = 'npc-tab-bar';
-  tabBar.id = 'npc-tab-bar';
-  tabBar.innerHTML = `
-    <button type="button" class="npc-tab-btn active" id="tab-btn-summary">📖 Konu Özeti</button>
-    <button type="button" class="npc-tab-btn" id="tab-btn-npc">🎬 NPC Video Rehberi</button>
-  `;
+    // Orijinal Konu Özeti içeriğini bul
+    let originalSummaryEl = null;
+    for (const child of Array.from(targetContainer.children)) {
+      if (child.style.display !== 'none' && !child.id.startsWith('npc-v3')) {
+        originalSummaryEl = child;
+        break;
+      }
+    }
 
-  const npcWrapper = document.createElement('div');
-  npcWrapper.id = 'npc-studio-wrapper';
-  npcWrapper.innerHTML = `
-    <div class="npc-top-controls">
-      <select class="npc-topic-select" id="npc-lesson-select">
-        ${NPC_LESSONS.map((l, idx) => `<option value="${idx}">${l.title}</option>`).join('')}
-      </select>
-      <div class="npc-ctrl-group">
-        <button type="button" class="npc-btn primary" id="npc-play-btn">▶ Dersi Başlat</button>
-        <button type="button" class="npc-btn" id="npc-replay-btn">↺ Tekrar</button>
-        <button type="button" class="npc-btn" id="npc-open-task-btn">⚡ Ödev Paneli</button>
-        <button type="button" class="npc-btn" id="npc-next-btn" disabled>Sonraki Ders 🔒</button>
-      </div>
-    </div>
+    // Önceki V3 kalıntısı varsa kaldır
+    ['npc-v3-tab-bar', 'npc-v3-wrapper', 'npc-v3-drawer'].forEach(id => {
+      const e = document.getElementById(id);
+      if (e) e.remove();
+    });
 
-    <div class="npc-video-card">
-      <div class="npc-character-row">
-        <div class="npc-avatar" id="npc-avatar">🧙‍♂️</div>
-        <div class="npc-speech-bubble" id="npc-speech">
-          <b>▶ Dersi Başlat</b> butonuna bas; konuyu anlatıp bitirince sağda anlık ödev paneli açılacak!
+    const tabBar = document.createElement('div');
+    tabBar.className = 'npc-v3-tab-bar';
+    tabBar.id = 'npc-v3-tab-bar';
+    tabBar.innerHTML = `
+      <button type="button" class="npc-v3-tab-btn active" id="v3-tab-summary">📖 Konu Özeti</button>
+      <button type="button" class="npc-v3-tab-btn" id="v3-tab-npc">🎬 NPC Video Rehberi</button>
+    `;
+
+    const npcWrapper = document.createElement('div');
+    npcWrapper.id = 'npc-v3-wrapper';
+    npcWrapper.innerHTML = `
+      <div class="npc-v3-controls">
+        <select class="npc-v3-select" id="npc-v3-select">
+          ${NPC_LESSONS.map((l, idx) => `<option value="${idx}">${l.title}</option>`).join('')}
+        </select>
+        <div class="npc-v3-btn-group">
+          <button type="button" class="npc-v3-btn primary" id="npc-v3-play">▶ Dersi Başlat</button>
+          <button type="button" class="npc-v3-btn" id="npc-v3-replay">↺ Tekrar</button>
+          <button type="button" class="npc-v3-btn" id="npc-v3-open-task">⚡ Ödev Paneli</button>
+          <button type="button" class="npc-v3-btn" id="npc-v3-next" disabled>Sonraki Ders 🔒</button>
         </div>
       </div>
-      <div class="npc-progress-track">
-        <div class="npc-progress-fill" id="npc-progress"></div>
+
+      <div class="npc-v3-card">
+        <div class="npc-v3-char-row">
+          <div class="npc-v3-avatar" id="npc-v3-avatar">🧙‍♂️</div>
+          <div class="npc-v3-speech" id="npc-v3-speech">
+            <b>▶ Dersi Başlat</b> butonuna bas; konuyu anlatıp bitirince sağda anlık ödev paneli açılacak!
+          </div>
+        </div>
+        <div class="npc-v3-track">
+          <div class="npc-v3-fill" id="npc-v3-progress"></div>
+        </div>
+        <div class="npc-v3-board" id="npc-v3-board"><span class="npc-v3-board-tag">PYTHON TAHTASI</span># Ders başladığında örnek kodlar burada görünecek...</div>
       </div>
-      <div class="npc-blackboard" id="npc-board"><span class="npc-board-tag">PYTHON TAHTASI</span># Ders başladığında örnek kodlar burada görünecek...</div>
-    </div>
 
-    <div class="npc-chat-log" id="npc-chat-log">
-      <div class="npc-msg"><b>NPC Usta:</b> Video bittiği an sağ tarafta görev penceren açılır.</div>
-    </div>
-  `;
+      <div class="npc-v3-chat" id="npc-v3-chat">
+        <div class="npc-v3-msg"><b>NPC Usta:</b> Video bittiği an sağ tarafta görev penceren açılır.</div>
+      </div>
+    `;
 
-  summaryPane.appendChild(tabBar);
-  summaryPane.appendChild(originalSummaryWrapper);
-  summaryPane.appendChild(npcWrapper);
+    targetContainer.insertBefore(tabBar, targetContainer.firstChild);
+    targetContainer.appendChild(npcWrapper);
 
-  // EKRANIN SAĞINDA AÇILAN YÜZEN GÖREV ÇEKMECESİ
-  const drawer = document.createElement('div');
-  drawer.id = 'npc-floating-task-drawer';
-  drawer.innerHTML = `
-    <div class="npc-drawer-header">
-      <span class="npc-drawer-title">⚡ NPC ANLIK UYGULAMA ÖDEVİ</span>
-      <button type="button" class="npc-drawer-close" id="npc-drawer-close">✕ Gizle</button>
-    </div>
-    <div class="npc-drawer-desc" id="npc-drawer-desc"></div>
-    <textarea class="npc-drawer-editor" id="npc-drawer-editor" spellcheck="false"></textarea>
-    <div class="npc-drawer-actions">
-      <button type="button" class="npc-btn primary" id="npc-drawer-check-btn">▶ Çalıştır & Kontrol Et</button>
-      <button type="button" class="npc-btn" id="npc-drawer-next-btn" style="display:none;">Sonraki Videoya Geç ⏭</button>
-    </div>
-    <div class="npc-drawer-feedback" id="npc-drawer-feedback"></div>
-  `;
-  document.body.appendChild(drawer);
+    // EKRANIN SAĞINDA ANINDA AÇILAN YÜZEN GÖREV ÇEKMECESİ
+    const drawer = document.createElement('div');
+    drawer.id = 'npc-v3-drawer';
+    drawer.innerHTML = `
+      <div class="npc-v3-drawer-head">
+        <span class="npc-v3-drawer-title">⚡ NPC ANLIK UYGULAMA ÖDEVİ</span>
+        <button type="button" class="npc-v3-drawer-close" id="npc-v3-close">✕ Gizle</button>
+      </div>
+      <div class="npc-v3-drawer-desc" id="npc-v3-desc"></div>
+      <textarea class="npc-v3-drawer-editor" id="npc-v3-editor" spellcheck="false"></textarea>
+      <div class="npc-v3-drawer-actions">
+        <button type="button" class="npc-v3-btn primary" id="npc-v3-check">▶ Çalıştır & Kontrol Et</button>
+        <button type="button" class="npc-v3-btn" id="npc-v3-drawer-next" style="display:none;">Sonraki Videoya Geç ⏭</button>
+      </div>
+      <div class="npc-v3-drawer-fb" id="npc-v3-fb"></div>
+    `;
+    document.body.appendChild(drawer);
 
-  // Sekme Geçişleri
-  const btnSummary = document.getElementById('tab-btn-summary');
-  const btnNpc = document.getElementById('tab-btn-npc');
+    const btnSummary = document.getElementById('v3-tab-summary');
+    const btnNpc = document.getElementById('v3-tab-npc');
 
-  btnSummary.addEventListener('click', () => {
-    btnSummary.classList.add('active');
-    btnNpc.classList.remove('active');
-    originalSummaryWrapper.style.display = 'block';
-    npcWrapper.style.display = 'none';
-    drawer.classList.remove('open');
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
-  });
+    btnSummary.addEventListener('click', () => {
+      btnSummary.classList.add('active');
+      btnNpc.classList.remove('active');
+      if (originalSummaryEl) originalSummaryEl.style.display = 'block';
+      npcWrapper.style.display = 'none';
+      drawer.classList.remove('open');
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    });
 
-  btnNpc.addEventListener('click', () => {
-    btnNpc.classList.add('active');
-    btnSummary.classList.remove('active');
-    originalSummaryWrapper.style.display = 'none';
-    npcWrapper.style.display = 'flex';
-  });
+    btnNpc.addEventListener('click', () => {
+      btnNpc.classList.add('active');
+      btnSummary.classList.remove('active');
+      if (originalSummaryEl) originalSummaryEl.style.display = 'none';
+      npcWrapper.style.display = 'flex';
+    });
 
-  const selectEl = document.getElementById('npc-lesson-select');
-  const playBtn = document.getElementById('npc-play-btn');
-  const replayBtn = document.getElementById('npc-replay-btn');
-  const openTaskManualBtn = document.getElementById('npc-open-task-btn');
-  const nextBtn = document.getElementById('npc-next-btn');
-  const avatarEl = document.getElementById('npc-avatar');
-  const speechEl = document.getElementById('npc-speech');
-  const boardEl = document.getElementById('npc-board');
-  const progressEl = document.getElementById('npc-progress');
-  const chatLogEl = document.getElementById('npc-chat-log');
+    const selectEl = document.getElementById('npc-v3-select');
+    const playBtn = document.getElementById('npc-v3-play');
+    const replayBtn = document.getElementById('npc-v3-replay');
+    const openTaskManualBtn = document.getElementById('npc-v3-open-task');
+    const nextBtn = document.getElementById('npc-v3-next');
+    const avatarEl = document.getElementById('npc-v3-avatar');
+    const speechEl = document.getElementById('npc-v3-speech');
+    const boardEl = document.getElementById('npc-v3-board');
+    const progressEl = document.getElementById('npc-v3-progress');
+    const chatLogEl = document.getElementById('npc-v3-chat');
 
-  const drawerCloseBtn = document.getElementById('npc-drawer-close');
-  const drawerDesc = document.getElementById('npc-drawer-desc');
-  const drawerEditor = document.getElementById('npc-drawer-editor');
-  const drawerCheckBtn = document.getElementById('npc-drawer-check-btn');
-  const drawerNextBtn = document.getElementById('npc-drawer-next-btn');
-  const drawerFeedback = document.getElementById('npc-drawer-feedback');
+    const drawerCloseBtn = document.getElementById('npc-v3-close');
+    const drawerDesc = document.getElementById('npc-v3-desc');
+    const drawerEditor = document.getElementById('npc-v3-editor');
+    const drawerCheckBtn = document.getElementById('npc-v3-check');
+    const drawerNextBtn = document.getElementById('npc-v3-drawer-next');
+    const drawerFeedback = document.getElementById('npc-v3-fb');
 
-  let currentLessonIdx = 0;
-  let playTimer = null;
-  let typeTimer = null;
+    let currentLessonIdx = 0;
+    let playTimer = null;
+    let typeTimer = null;
 
-  drawerCloseBtn.addEventListener('click', () => drawer.classList.remove('open'));
-  openTaskManualBtn.addEventListener('click', () => openRightDrawer(NPC_LESSONS[currentLessonIdx]));
+    drawerCloseBtn.addEventListener('click', () => drawer.classList.remove('open'));
+    openTaskManualBtn.addEventListener('click', () => openRightDrawer(NPC_LESSONS[currentLessonIdx]));
 
-  function speakText(text) {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'tr-TR';
-    utter.rate = 1.02;
-    window.speechSynthesis.speak(utter);
-  }
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'tr-TR';
+      utter.rate = 1.02;
+      window.speechSynthesis.speak(utter);
+    }
 
-  function addChatMessage(htmlText, isTask) {
-    const div = document.createElement('div');
-    div.className = 'npc-msg' + (isTask ? ' task-alert' : '');
-    div.innerHTML = htmlText;
-    chatLogEl.appendChild(div);
-    chatLogEl.scrollTop = chatLogEl.scrollHeight;
-  }
+    function addChatMessage(htmlText, isTask) {
+      const div = document.createElement('div');
+      div.className = 'npc-v3-msg' + (isTask ? ' task-alert' : '');
+      div.innerHTML = htmlText;
+      chatLogEl.appendChild(div);
+      chatLogEl.scrollTop = chatLogEl.scrollHeight;
+    }
 
-  function typeCodeOnBoard(codeText) {
-    clearInterval(typeTimer);
-    boardEl.innerHTML = '<span class="npc-board-tag">PYTHON TAHTASI</span>';
-    const codeNode = document.createTextNode('');
-    boardEl.appendChild(codeNode);
-    let i = 0;
-    typeTimer = setInterval(() => {
-      if (i < codeText.length) {
-        codeNode.textContent += codeText[i++];
-      } else {
-        clearInterval(typeTimer);
+    function typeCodeOnBoard(codeText) {
+      clearInterval(typeTimer);
+      boardEl.innerHTML = '<span class="npc-v3-board-tag">PYTHON TAHTASI</span>';
+      const codeNode = document.createTextNode('');
+      boardEl.appendChild(codeNode);
+      let i = 0;
+      typeTimer = setInterval(() => {
+        if (i < codeText.length) {
+          codeNode.textContent += codeText[i++];
+        } else {
+          clearInterval(typeTimer);
+        }
+      }, 20);
+    }
+
+    function stopPlayback() {
+      clearTimeout(playTimer);
+      clearInterval(typeTimer);
+      avatarEl.classList.remove('speaking');
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    }
+
+    function openRightDrawer(lesson) {
+      avatarEl.classList.remove('speaking');
+      speechEl.innerHTML = `<b>🎯 Sıra Sende:</b> ${lesson.taskPrompt}`;
+      addChatMessage(`<b>🎯 Ödev Açıldı:</b> ${lesson.taskPrompt}`, true);
+      speakText("Şimdi sıra sende! Sağda açılan panelde ödevi çöz ve kontrol et.");
+
+      drawerDesc.textContent = lesson.taskPrompt;
+      drawerEditor.value = lesson.starterCode;
+      drawerFeedback.className = 'npc-v3-drawer-fb';
+      drawerFeedback.textContent = '';
+      drawerNextBtn.style.display = 'none';
+      drawer.classList.add('open');
+      setTimeout(() => drawerEditor.focus(), 200);
+    }
+
+    function startLesson(idx) {
+      stopPlayback();
+      currentLessonIdx = idx;
+      selectEl.value = String(idx);
+      const lesson = NPC_LESSONS[idx];
+
+      nextBtn.disabled = true;
+      nextBtn.classList.remove('next-unlocked');
+      nextBtn.textContent = 'Sonraki Ders 🔒';
+      drawer.classList.remove('open');
+      progressEl.style.width = '0%';
+      chatLogEl.innerHTML = `<div class="npc-v3-msg"><b>NPC Usta:</b> "${lesson.title}" anlatımı başladı...</div>`;
+
+      let stepIdx = 0;
+      function runStep() {
+        if (stepIdx >= lesson.steps.length) {
+          progressEl.style.width = '100%';
+          openRightDrawer(lesson);
+          return;
+        }
+        const step = lesson.steps[stepIdx];
+        avatarEl.classList.add('speaking');
+        speechEl.textContent = step.text;
+        addChatMessage(`<b>NPC Usta:</b> ${step.text}`, false);
+        typeCodeOnBoard(step.code);
+        speakText(step.text);
+
+        progressEl.style.width = `${Math.round(((stepIdx + 1) / lesson.steps.length) * 85)}%`;
+        stepIdx++;
+        playTimer = setTimeout(runStep, 4800);
       }
-    }, 20);
-  }
 
-  function stopPlayback() {
-    clearTimeout(playTimer);
-    clearInterval(typeTimer);
-    avatarEl.classList.remove('speaking');
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
-  }
+      runStep();
+    }
 
-  function openRightDrawer(lesson) {
-    avatarEl.classList.remove('speaking');
-    speechEl.innerHTML = `<b>🎯 Sıra Sende:</b> ${lesson.taskPrompt}`;
-    addChatMessage(`<b>🎯 Ödev Açıldı:</b> ${lesson.taskPrompt}`, true);
-    speakText("Şimdi sıra sende! Sağda açılan panelde ödevi çöz ve kontrol et.");
+    playBtn.addEventListener('click', () => startLesson(Number(selectEl.value)));
+    replayBtn.addEventListener('click', () => startLesson(currentLessonIdx));
+    selectEl.addEventListener('change', () => startLesson(Number(selectEl.value)));
 
-    drawerDesc.textContent = lesson.taskPrompt;
-    drawerEditor.value = lesson.starterCode;
-    drawerFeedback.className = 'npc-drawer-feedback';
-    drawerFeedback.textContent = '';
-    drawerNextBtn.style.display = 'none';
-    drawer.classList.add('open');
-    setTimeout(() => drawerEditor.focus(), 200);
-  }
+    function goToNextLesson() {
+      const nextIdx = (currentLessonIdx + 1) % NPC_LESSONS.length;
+      startLesson(nextIdx);
+    }
 
-  function startLesson(idx) {
-    stopPlayback();
-    currentLessonIdx = idx;
-    selectEl.value = String(idx);
-    const lesson = NPC_LESSONS[idx];
+    nextBtn.addEventListener('click', () => {
+      if (!nextBtn.disabled) goToNextLesson();
+    });
+    drawerNextBtn.addEventListener('click', goToNextLesson);
 
-    nextBtn.disabled = true;
-    nextBtn.classList.remove('next-unlocked');
-    nextBtn.textContent = 'Sonraki Ders 🔒';
-    drawer.classList.remove('open');
-    progressEl.style.width = '0%';
-    chatLogEl.innerHTML = `<div class="npc-msg"><b>NPC Usta:</b> "${lesson.title}" anlatımı başladı...</div>`;
+    drawerCheckBtn.addEventListener('click', async () => {
+      const lesson = NPC_LESSONS[currentLessonIdx];
+      const userCode = drawerEditor.value;
 
-    let stepIdx = 0;
-    function runStep() {
-      if (stepIdx >= lesson.steps.length) {
-        progressEl.style.width = '100%';
-        openRightDrawer(lesson);
+      if (!window.pyodide) {
+        drawerFeedback.className = 'npc-v3-drawer-fb err';
+        drawerFeedback.textContent = 'Python motoru henüz yükleniyor, birkaç saniye bekleyip tekrar dene.';
         return;
       }
-      const step = lesson.steps[stepIdx];
-      avatarEl.classList.add('speaking');
-      speechEl.textContent = step.text;
-      addChatMessage(`<b>NPC Usta:</b> ${step.text}`, false);
-      typeCodeOnBoard(step.code);
-      speakText(step.text);
 
-      progressEl.style.width = `${Math.round(((stepIdx + 1) / lesson.steps.length) * 85)}%`;
-      stepIdx++;
-      playTimer = setTimeout(runStep, 4800);
-    }
-
-    runStep();
-  }
-
-  playBtn.addEventListener('click', () => startLesson(Number(selectEl.value)));
-  replayBtn.addEventListener('click', () => startLesson(currentLessonIdx));
-  selectEl.addEventListener('change', () => startLesson(Number(selectEl.value)));
-
-  function goToNextLesson() {
-    const nextIdx = (currentLessonIdx + 1) % NPC_LESSONS.length;
-    startLesson(nextIdx);
-  }
-
-  nextBtn.addEventListener('click', () => {
-    if (!nextBtn.disabled) goToNextLesson();
-  });
-  drawerNextBtn.addEventListener('click', goToNextLesson);
-
-  drawerCheckBtn.addEventListener('click', async () => {
-    const lesson = NPC_LESSONS[currentLessonIdx];
-    const userCode = drawerEditor.value;
-
-    if (!window.pyodide) {
-      drawerFeedback.className = 'npc-drawer-feedback err';
-      drawerFeedback.textContent = 'Python motoru henüz yükleniyor, birkaç saniye bekleyip tekrar dene.';
-      return;
-    }
-
-    try {
-      const mockList = JSON.stringify(lesson.mockInputs || ["Test"]);
-      window.pyodide.runPython(`
+      try {
+        const mockList = JSON.stringify(lesson.mockInputs || ["Test"]);
+        window.pyodide.runPython(`
 import sys, io, builtins
 _npc_out = io.StringIO()
 sys.stdout = _npc_out
@@ -3691,30 +3706,34 @@ def _npc_mock_input(prompt=""):
     return _mock_vals.pop(0) if _mock_vals else "Python"
 builtins.input = _npc_mock_input
 `);
-      await window.pyodide.runPythonAsync(userCode);
-      const output = window.pyodide.runPython('_npc_out.getvalue()');
+        await window.pyodide.runPythonAsync(userCode);
+        const output = window.pyodide.runPython('_npc_out.getvalue()');
 
-      if (lesson.validate(userCode, output)) {
-        drawerFeedback.className = 'npc-drawer-feedback ok';
-        drawerFeedback.textContent = `✅ Harika! Çıktın: "${output.trim()}" — Ödevi başardın, şimdi sonraki videoya geçebilirsin!`;
-        addChatMessage(`<b>✅ Tamamlandı!</b> Ödevi doğru çözdün.`, true);
-        speakText("Harika! Doğru çözdün, şimdi sonraki videoya geçebilirsin.");
+        if (lesson.validate(userCode, output)) {
+          drawerFeedback.className = 'npc-v3-drawer-fb ok';
+          drawerFeedback.textContent = `✅ Harika! Çıktın: "${output.trim()}" — Ödevi başardın, şimdi sonraki videoya geçebilirsin!`;
+          addChatMessage(`<b>✅ Tamamlandı!</b> Ödevi doğru çözdün.`, true);
+          speakText("Harika! Doğru çözdün, şimdi sonraki videoya geçebilirsin.");
 
-        nextBtn.disabled = false;
-        nextBtn.classList.add('next-unlocked');
-        nextBtn.textContent = 'Sonraki Ders ⏭';
+          nextBtn.disabled = false;
+          nextBtn.classList.add('next-unlocked');
+          nextBtn.textContent = 'Sonraki Ders ⏭';
 
-        drawerNextBtn.style.display = 'inline-block';
-        drawerNextBtn.className = 'npc-btn next-unlocked';
-      } else {
-        drawerFeedback.className = 'npc-drawer-feedback err';
-        drawerFeedback.textContent = `❌ Çıktın: "${output.trim() || 'Çıktı yok'}". Görev açıklamasına göre tekrar düzenle!`;
+          drawerNextBtn.style.display = 'inline-block';
+          drawerNextBtn.className = 'npc-v3-btn next-unlocked';
+        } else {
+          drawerFeedback.className = 'npc-v3-drawer-fb err';
+          drawerFeedback.textContent = `❌ Çıktın: "${output.trim() || 'Çıktı yok'}". Görev açıklamasına göre tekrar düzenle!`;
+        }
+      } catch (err) {
+        drawerFeedback.className = 'npc-v3-drawer-fb err';
+        drawerFeedback.textContent = '⚠️ Kod Hatası: ' + err.message.split('\n').slice(-2).join(' ');
       }
-    } catch (err) {
-      drawerFeedback.className = 'npc-drawer-feedback err';
-      drawerFeedback.textContent = '⚠️ Kod Hatası: ' + err.message.split('\n').slice(-2).join(' ');
-    }
-  });
+    });
+  }
+
+  // Eski NPC scripti DOM'u kurduktan hemen sonra devreye gir
+  setTimeout(initNpcV3, 450);
 })();
 </script>
 </body>
