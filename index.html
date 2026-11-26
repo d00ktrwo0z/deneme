@@ -4103,5 +4103,220 @@ def _transform_user_code_ast(source_code):
   }
 })();
 </script>
+  <!-- SİLİNEMEYEN KİLİTLİ ORİJİNAL GİRİŞ EKRANI & TAM GÜVENLİK PAKETİ -->
+<style>
+  #python-studio-lock-gate {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, #1e1b4b 0%, #090d16 70%, #05070c 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2147483647;
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #python-studio-lock-gate.gate-unlocked {
+    opacity: 0 !important;
+    transform: translateY(-100%) !important;
+    pointer-events: none !important;
+  }
+  .gate-hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    font-style: italic;
+    background: linear-gradient(135deg, #e9d5ff 0%, #a855f7 55%, #7e22ce 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: gateSlideUp 0.65s ease forwards 0.1s;
+  }
+  .gate-hero-sub {
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #eab308;
+    margin: 8px 0 0 0;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: gateSlideUp 0.65s ease forwards 0.3s;
+  }
+  @keyframes gateSlideUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .orig-name-wrap {
+    margin-top: 26px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1.5px solid rgba(168, 85, 247, 0.6);
+    border-left: 4px solid #eab308;
+    padding: 9px 11px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transform: translateY(14px);
+    animation: gateSlideUp 0.65s ease forwards 0.45s;
+  }
+  .orig-name-input {
+    background: rgba(255, 255, 255, 0.96);
+    color: #0f172a;
+    border: 1px solid #a855f7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    outline: none;
+    width: 220px;
+  }
+  .orig-name-btn {
+    background: linear-gradient(135deg, #9333ea, #6b21a8);
+    color: #fff;
+    border: 1px solid #eab308;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .header-user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(139, 92, 246, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    border-left: 3px solid var(--accent-gold, #eab308);
+    color: var(--text-primary, #f8fafc);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+(function () {
+  /* ÖNCEKİ ÇAKIŞAN KATMANLARI VE ALTTAKİ ÇIKINTIYI TAMAMEN TEMİZLE */
+  ['elite-gate-overlay', 'studio-toast-alert', 'python-studio-lock-gate'].forEach(id => {
+    document.querySelectorAll('#' + id).forEach(el => el.remove());
+  });
+  const oldSplash = document.getElementById('welcome-splash');
+  if (oldSplash) oldSplash.remove();
+
+  const STORAGE_KEY = 'pythonhazirlik_user_name';
+  function sanitizeName(raw) {
+    return String(raw || '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, 40);
+  }
+  const savedName = sanitizeName(localStorage.getItem(STORAGE_KEY));
+
+  function renderHeaderBadge(name) {
+    const safeName = sanitizeName(name);
+    if (!safeName) return;
+    const actionsBar = document.querySelector('.header-actions');
+    const saveBtn = actionsBar ? actionsBar.querySelector('.save-btn') : null;
+    if (!actionsBar || !saveBtn) return;
+
+    let badge = document.getElementById('header-user-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.id = 'header-user-badge';
+      badge.className = 'header-user-badge';
+      badge.title = 'İsmini değiştirmek için tıkla';
+      actionsBar.insertBefore(badge, saveBtn);
+    }
+
+    badge.onclick = function () {
+      const yeni = prompt('Stüdyoda görünecek adını gir:', sanitizeName(localStorage.getItem(STORAGE_KEY)));
+      const cleanYeni = sanitizeName(yeni);
+      if (cleanYeni) {
+        localStorage.setItem(STORAGE_KEY, cleanYeni);
+        renderHeaderBadge(cleanYeni);
+      }
+    };
+
+    badge.replaceChildren();
+    const diamond = document.createElement('span');
+    diamond.style.color = '#eab308';
+    diamond.textContent = '◆ ';
+    badge.appendChild(diamond);
+    badge.appendChild(document.createTextNode(safeName));
+  }
+
+  if (savedName) renderHeaderBadge(savedName);
+
+  /* ANA KODUN SİLEMEYECEĞİ KİLİTLİ GİRİŞ PERDESİ */
+  const lockGate = document.createElement('div');
+  lockGate.id = 'python-studio-lock-gate';
+
+  const titleEl = document.createElement('h1');
+  titleEl.className = 'gate-hero-title';
+  titleEl.textContent = 'Python Stüdyoya';
+
+  const subEl = document.createElement('p');
+  subEl.className = 'gate-hero-sub';
+  subEl.textContent = 'Hoşgeldiniz';
+
+  const box = document.createElement('div');
+  box.className = 'orig-name-wrap';
+
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'orig-name-input';
+  inp.placeholder = 'Adını yaz...';
+  inp.autocomplete = 'off';
+  inp.maxLength = 40;
+  inp.value = savedName;
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'orig-name-btn';
+  btn.textContent = 'Giriş →';
+
+  box.appendChild(inp);
+  box.appendChild(btn);
+  lockGate.appendChild(titleEl);
+  lockGate.appendChild(subEl);
+  lockGate.appendChild(box);
+  document.body.appendChild(lockGate);
+
+  setTimeout(() => inp.focus(), 200);
+
+  function unlockGate() {
+    const val = sanitizeName(inp.value);
+    if (!val) {
+      inp.style.borderColor = '#f43f5e';
+      inp.focus();
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, val);
+    } catch (e) {
+      alert('Tarayıcı depolama alanı dolu olduğu için ismin geçici kaydedildi.');
+    }
+    renderHeaderBadge(val);
+    lockGate.classList.add('gate-unlocked');
+    setTimeout(() => lockGate.remove(), 750);
+  }
+
+  btn.addEventListener('click', unlockGate);
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      unlockGate();
+    }
+  });
+})();
+</script>
 </body>
 </html>
