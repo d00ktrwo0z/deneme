@@ -3230,5 +3230,433 @@ async def _live_input(prompt=""):
   }
 })();
 </script>
+  <!-- HİÇBİR KODU SİLMEDEN EN ALTA EKLENEN GÜVENLİK, STABİLİTE VE AI SES PAKETİ -->
+<style>
+  #welcome-splash {
+    transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+  #welcome-splash.splash-unlock {
+    opacity: 0 !important;
+    transform: translateY(-28px) !important;
+    pointer-events: none !important;
+  }
+  .orig-name-wrap {
+    margin-top: 22px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.82);
+    border: 1.5px solid rgba(168, 85, 247, 0.55);
+    border-left: 4px solid #eab308;
+    padding: 8px 10px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    z-index: 10;
+  }
+  .orig-name-input {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+    border: 1px solid #a855f7;
+    border-radius: 4px;
+    padding: 7px 11px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    outline: none;
+    width: 215px;
+  }
+  .orig-name-btn {
+    background: linear-gradient(135deg, #9333ea, #6b21a8);
+    color: #fff;
+    border: 1px solid #eab308;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .header-user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(139, 92, 246, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    border-left: 3px solid var(--accent-gold, #eab308);
+    color: var(--text-primary, #f8fafc);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #studio-toast-alert {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: #1e1b4b;
+    color: #f8fafc;
+    border: 1.5px solid #eab308;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 2147483647;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    transition: transform 0.3s ease;
+  }
+  #studio-toast-alert.show {
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+
+<script>
+(function () {
+  if (window.__masterPatchApplied) return;
+  window.__masterPatchApplied = true;
+
+  /* 0. ÖNCEKİ ÇAKIŞAN KATMANLARI OTOMATİK TEMİZLE (SİLMEDEN DEVRE DIŞI BIRAK) */
+  function cleanupLegacyOverlays() {
+    const dupGate = document.getElementById('elite-gate-overlay');
+    if (dupGate) dupGate.remove();
+    const oldToast = document.getElementById('studio-toast-alert');
+    if (oldToast) oldToast.remove();
+  }
+  cleanupLegacyOverlays();
+
+  const toastEl = document.createElement('div');
+  toastEl.id = 'studio-toast-alert';
+  document.body.appendChild(toastEl);
+  let toastTimer = null;
+
+  function showStudioAlert(msg, isError) {
+    toastEl.textContent = msg;
+    toastEl.style.borderColor = isError ? '#f43f5e' : '#eab308';
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 4000);
+  }
+
+  /* 1 & 2. TEK GİRİŞ SİSTEMİ + XSS KORUMALI İSİM ATAMASI */
+  const STORAGE_KEY = 'pythonhazirlik_user_name';
+
+  function sanitizeName(raw) {
+    return String(raw || '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, 40);
+  }
+
+  const savedName = sanitizeName(localStorage.getItem(STORAGE_KEY));
+  const splash = document.getElementById('welcome-splash');
+
+  function renderHeaderBadge(name) {
+    const safeName = sanitizeName(name);
+    if (!safeName) return;
+    const actionsBar = document.querySelector('.header-actions');
+    const saveBtn = actionsBar ? actionsBar.querySelector('.save-btn') : null;
+    if (!actionsBar || !saveBtn) return;
+
+    let badge = document.getElementById('header-user-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.id = 'header-user-badge';
+      badge.className = 'header-user-badge';
+      badge.title = 'İsmini değiştirmek için tıkla';
+      actionsBar.insertBefore(badge, saveBtn);
+    }
+
+    badge.onclick = function () {
+      const yeni = prompt('Stüdyoda görünecek adını gir:', sanitizeName(localStorage.getItem(STORAGE_KEY)));
+      const cleanYeni = sanitizeName(yeni);
+      if (cleanYeni) {
+        localStorage.setItem(STORAGE_KEY, cleanYeni);
+        renderHeaderBadge(cleanYeni);
+      }
+    };
+
+    badge.replaceChildren();
+    const diamond = document.createElement('span');
+    diamond.style.color = '#eab308';
+    diamond.textContent = '◆ ';
+    badge.appendChild(diamond);
+    badge.appendChild(document.createTextNode(safeName));
+  }
+
+  if (savedName) renderHeaderBadge(savedName);
+
+  if (splash) {
+    splash.querySelectorAll('.orig-name-wrap').forEach(el => el.remove());
+    splash.classList.remove('splash-unlock');
+    splash.style.display = 'flex';
+    splash.style.opacity = '1';
+
+    const box = document.createElement('div');
+    box.className = 'orig-name-wrap';
+
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.id = 'orig-name-input';
+    inp.className = 'orig-name-input';
+    inp.placeholder = 'Adını yaz...';
+    inp.autocomplete = 'off';
+    inp.maxLength = 40;
+    inp.value = savedName;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'orig-name-btn';
+    btn.className = 'orig-name-btn';
+    btn.textContent = 'Giriş →';
+
+    box.appendChild(inp);
+    box.appendChild(btn);
+    splash.appendChild(box);
+
+    setTimeout(() => inp.focus(), 150);
+
+    function unlockSplash() {
+      const val = sanitizeName(inp.value);
+      if (!val) {
+        inp.style.borderColor = '#f43f5e';
+        inp.focus();
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY, val);
+      renderHeaderBadge(val);
+      splash.classList.add('splash-unlock');
+      setTimeout(() => { splash.style.display = 'none'; }, 700);
+    }
+
+    btn.addEventListener('click', unlockSplash);
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        unlockSplash();
+      }
+    });
+  }
+
+  /* 3, 4 & 6. AST TABANLI GERÇEK INPUT() + SONSUZ DÖNGÜ KORUMASI */
+  function installPythonSafetyGuards() {
+    if (!window.pyodide || window.__pySafetyInstalled) return;
+    window.__pySafetyInstalled = true;
+
+    window._real_interactive_input = function (promptText) {
+      return new Promise((resolve) => {
+        const label = String(promptText || 'Değer girin:');
+        const liveInput = document.querySelector('#live-chat-input, .live-input-field');
+        const liveBtn = document.querySelector('#live-chat-send, .live-input-send');
+        if (liveInput && liveBtn && liveInput.offsetParent !== null) {
+          liveInput.placeholder = label;
+          liveInput.focus();
+          const onSend = () => {
+            const val = liveInput.value;
+            liveInput.value = '';
+            cleanup();
+            resolve(val);
+          };
+          const onKey = (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              onSend();
+            }
+          };
+          const cleanup = () => {
+            liveBtn.removeEventListener('click', onSend);
+            liveInput.removeEventListener('keydown', onKey);
+          };
+          liveBtn.addEventListener('click', onSend);
+          liveInput.addEventListener('keydown', onKey);
+        } else {
+          const ans = window.prompt(label, '');
+          resolve(ans === null ? '' : String(ans));
+        }
+      });
+    };
+
+    window.pyodide.runPython(`
+import ast, sys, time
+
+class _InfiniteLoopError(Exception):
+    pass
+
+def _install_loop_guard(max_steps=180000, max_seconds=3.0):
+    steps = 0
+    start_t = time.monotonic()
+    def _tracer(frame, event, arg):
+        nonlocal steps
+        if event == 'line':
+            steps += 1
+            if steps > max_steps or (time.monotonic() - start_t) > max_seconds:
+                sys.settrace(None)
+                raise _InfiniteLoopError("Sonsuz döngü koruması: Kod çok uzun sürdüğü için durduruldu.")
+        return _tracer
+    sys.settrace(_tracer)
+
+def _clear_loop_guard():
+    sys.settrace(None)
+
+class _SafeInputTransformer(ast.NodeTransformer):
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        if isinstance(node.func, ast.Name) and node.func.id == 'input':
+            await_node = ast.Await(
+                value=ast.Call(
+                    func=ast.Name(id='_real_interactive_input', ctx=ast.Load()),
+                    args=node.args,
+                    keywords=node.keywords
+                )
+            )
+            return ast.copy_location(await_node, node)
+        return node
+
+def _transform_user_code_ast(source_code):
+    try:
+        tree = ast.parse(source_code, mode='exec')
+        tree = _SafeInputTransformer().visit(tree)
+        ast.fix_missing_locations(tree)
+        return ast.unparse(tree)
+    except SyntaxError:
+        return source_code
+`);
+
+    const origRunAsync = window.pyodide.runPythonAsync.bind(window.pyodide);
+    window.pyodide.runPythonAsync = async function (code, ...args) {
+      let safeCode = String(code || '');
+      try {
+        window.pyodide.globals.set('_raw_src_tmp', safeCode);
+        safeCode = window.pyodide.runPython('_transform_user_code_ast(_raw_src_tmp)');
+        window.pyodide.runPython('_install_loop_guard()');
+        return await origRunAsync(safeCode, ...args);
+      } finally {
+        try { window.pyodide.runPython('_clear_loop_guard()'); } catch (_) {}
+      }
+    };
+  }
+
+  const pyPoll = setInterval(() => {
+    if (window.pyodide) {
+      installPythonSafetyGuards();
+      clearInterval(pyPoll);
+    }
+  }, 400);
+
+  /* 5 & 7. YEDEK DOSYASI DOĞRULAMA & GÜVENLİ LOCALSTORAGE KAYIT SİSTEMİ */
+  function clampIndex(val, maxLen) {
+    const n = Number(val);
+    if (!Number.isInteger(n) || n < 0) return 0;
+    if (typeof maxLen === 'number' && maxLen > 0 && n >= maxLen) return maxLen - 1;
+    return n;
+  }
+
+  window.validateAndSanitizeBackupData = function (rawObj) {
+    if (!rawObj || typeof rawObj !== 'object' || Array.isArray(rawObj)) {
+      throw new Error('Geçersiz yedek dosyası formatı.');
+    }
+    const maxTopics = Array.isArray(window.curriculum) ? window.curriculum.length : 10;
+    const topicIdx = clampIndex(rawObj.topicIndex ?? rawObj.currentTopic ?? 0, maxTopics);
+
+    let maxTasks = 20;
+    if (Array.isArray(window.curriculum) && window.curriculum[topicIdx] && Array.isArray(window.curriculum[topicIdx].tasks)) {
+      maxTasks = window.curriculum[topicIdx].tasks.length;
+    }
+    const taskIdx = clampIndex(rawObj.taskIndex ?? rawObj.currentTask ?? 0, maxTasks);
+
+    const safeCodes = {};
+    if (rawObj.savedCodes && typeof rawObj.savedCodes === 'object' && !Array.isArray(rawObj.savedCodes)) {
+      for (const [k, v] of Object.entries(rawObj.savedCodes)) {
+        if (typeof k === 'string' && typeof v === 'string' && v.length <= 50000) {
+          safeCodes[k] = v;
+        }
+      }
+    }
+
+    return {
+      ...rawObj,
+      topicIndex: topicIdx,
+      currentTopic: topicIdx,
+      taskIndex: taskIdx,
+      currentTask: taskIdx,
+      savedCodes: safeCodes
+    };
+  };
+
+  const origSetItem = Storage.prototype.setItem;
+  Storage.prototype.setItem = function (key, value) {
+    try {
+      origSetItem.call(this, key, value);
+    } catch (err) {
+      if (err && (err.name === 'QuotaExceededError' || err.code === 22)) {
+        showStudioAlert('⚠️ Tarayıcı hafızası doldu! İlerlemen kaydedilemedi, gereksiz kodları temizle veya yedek indir.', true);
+      } else {
+        showStudioAlert('⚠️ Kayıt sırasında beklenmeyen bir hata oluştu.', true);
+      }
+    }
+  };
+
+  /* 8. KESİKSİZ DOĞAL TÜRKÇE AI SES & TELAFUZ YAMASI */
+  if ('speechSynthesis' in window) {
+    let bestVoice = null;
+    function loadTrVoice() {
+      const voices = window.speechSynthesis.getVoices() || [];
+      const tr = voices.filter(v => (v.lang || '').toLowerCase().includes('tr'));
+      if (tr.length) {
+        bestVoice = tr.find(v => /google|natural|neural|emel|yelda/i.test(v.name)) || tr[0];
+      }
+    }
+    loadTrVoice();
+    window.speechSynthesis.onvoiceschanged = loadTrVoice;
+
+    function fixPronunciation(text) {
+      return String(text || '')
+        .replace(/print\s*\(\s*\)/gi, 'pirint fonksiyonu')
+        .replace(/\bprint\b/gi, 'pirint')
+        .replace(/input\s*\(\s*\)/gi, 'input fonksiyonu')
+        .replace(/range\s*\(\s*\)/gi, 'reync fonksiyonu')
+        .replace(/\brange\b/gi, 'reync')
+        .replace(/\bwhile\b/gi, 'vayl')
+        .replace(/\belif\b/gi, 'elif')
+        .replace(/\belse\b/gi, 'els')
+        .replace(/\breturn\b/gi, 'ritörn')
+        .replace(/\bbreak\b/gi, 'bireyk')
+        .replace(/\bfloat\b/gi, 'fıloat')
+        .replace(/\bstr\b/gi, 'sıtır')
+        .replace(/\bturtle\b/gi, 'törtıl')
+        .replace(/\bforward\b/gi, 'forvırd')
+        .replace(/\bright\b/gi, 'rayt')
+        .replace(/\bPython\b/gi, 'Paytın')
+        .replace(/[#*_`~]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    const origSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis);
+    let keepTimer = null;
+
+    window.speechSynthesis.speak = function (utter) {
+      if (!utter) return;
+      loadTrVoice();
+      utter.text = fixPronunciation(utter.text);
+      utter.lang = 'tr-TR';
+      if (bestVoice) utter.voice = bestVoice;
+      utter.rate = 0.98;
+      utter.pitch = 1.02;
+
+      clearInterval(keepTimer);
+      utter.onstart = () => {
+        keepTimer = setInterval(() => {
+          if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.resume();
+          } else {
+            clearInterval(keepTimer);
+          }
+        }, 9000);
+      };
+      utter.onend = utter.onerror = () => clearInterval(keepTimer);
+      origSpeak(utter);
+    };
+  }
+})();
+</script>
 </body>
 </html>
