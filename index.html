@@ -3,7 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pythonhazırlık — Elit Python Çalışma Stüdyosu</title>
+  <meta name="google-site-verification" content="tixgt-V-Jh6xytr_HM8XT8A6Hrs4eJebqK2-xM1UP5I" />
+  <title>pythonhazırlık — Enes Altın | Elit Python Çalışma Stüdyosu</title>
+  <meta name="description" content="Enes Altın tarafından geliştirilen pythonhazırlık; etkileşimli Python alıştırmaları, 15 dakikalık mini sınavlar ve Turtle çizim stüdyosu sunar." />
+  <meta name="keywords" content="pythonhazırlık, Enes Altın, python dersleri, python alıştırmaları, python editör, turtle çizim" />
+  <meta name="author" content="Enes Altın" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://trwo0z.github.io/gelismis-python/" />
+
+  <!-- Sosyal Medya ve Google Önizleme Etiketleri -->
+  <meta property="og:title" content="pythonhazırlık — Enes Altın | Python Çalışma Stüdyosu" />
+  <meta property="og:description" content="Enes Altın tarafından geliştirilen ücretsiz, tarayıcı tabanlı etkileşimli Python öğrenme ve kodlama platformu." />
+  <meta property="og:url" content="https://trwo0z.github.io/gelismis-python/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Yapılandırılmış Veri (Adını ve Siteni Google'a Tanıtan Resmi Kart) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "pythonhazırlık — Elit Python Çalışma Stüdyosu",
+    "url": "https://trwo0z.github.io/gelismis-python/",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web Browser",
+    "author": {
+      "@type": "Person",
+      "name": "Enes Altın"
+    },
+    "description": "Enes Altın tarafından geliştirilen etkileşimli Python eğitim, sınav ve çizim platformu."
+  }
+  </script>
+
   <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
   <style>
     :root {
@@ -54,7 +84,7 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* Koyu Tema Özel: En En Arkada Hafif Beyaz & Mor Gölgeli Çapraz Şeritler */
+    /* Koyu Tema Özel: En Arkada Hafif Beyaz & Mor Gölgeli Çapraz Şeritler */
     .dark-diagonal-backdrop {
       position: fixed;
       inset: 0;
@@ -953,7 +983,7 @@
 </head>
 <body>
 
-  <!-- En En Arkada Koyu Tema Özel Beyaz-Mor Gölgeli Çapraz Şerit Katmanı -->
+  <!-- En Arkada Koyu Tema Özel Beyaz-Mor Gölgeli Çapraz Şerit Katmanı -->
   <div class="dark-diagonal-backdrop"></div>
 
   <!-- Özel Giriş Ekranı -->
@@ -1230,6 +1260,10 @@ for i in range(5):
       </div>
     </div>
   </div>
+
+  <footer style="height:26px; background:var(--bg-panel); border-top:1px solid var(--border-line); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--text-secondary); z-index:15; flex-shrink:0;">
+    <span>pythonhazırlık — Geliştirici: <strong style="color:var(--accent-gold);">Enes Altın</strong></span>
+  </footer>
 
   <script>
     const LECTURES_DATA = [
@@ -1889,7 +1923,6 @@ sys.modules["turtle"] = _turtle_mod
       renderSidebar();
       renderTask();
       const splash = document.getElementById('welcome-splash');
-      // 1 saniye arttırılmış giriş ekranı süresi (2100ms)
       setTimeout(() => {
         splash.classList.add('hide-splash');
         setTimeout(() => splash.remove(), 850);
