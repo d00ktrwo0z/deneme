@@ -2764,7 +2764,7 @@ async def _live_input(prompt=""):
   };
 })();
 </script>
-<!-- GİRİŞ EKRANI İSİM SORMA & ÜST MENÜ İSİM ROZETİ (KESİN ÇÖZÜM) -->
+<!-- GİRİŞ EKRANI PİKSEL GLITCH & İSİM SORMA EKLENTİSİ -->
 <style>
   #elite-gate-overlay {
     position: fixed;
@@ -2776,12 +2776,98 @@ async def _live_input(prompt=""):
     justify-content: center;
     z-index: 2147483647;
     transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.75s ease;
+    overflow: hidden;
+  }
+  /* Arka plana çok hafif CRT / piksel tarama çizgisi */
+  #elite-gate-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
   }
   #elite-gate-overlay.gate-closing {
     transform: translateY(-100%);
     opacity: 0;
     pointer-events: none;
   }
+
+  /* PİKSEL BOZULMA / CIZIRTI (GLITCH) BAŞLIK */
+  .glitch-title {
+    position: relative;
+    font-size: clamp(2.4rem, 5.2vw, 4.1rem);
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    color: #e9d5ff;
+    text-shadow:
+      0 0 18px rgba(147, 51, 234, 0.75),
+      -2px 0 #a855f7,
+      2px 0 #eab308;
+    padding: 4px 18px;
+    user-select: none;
+    animation: glitchSkew 2.8s infinite linear alternate-reverse;
+  }
+  .glitch-title::before,
+  .glitch-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 4px 18px;
+    background: transparent;
+    overflow: hidden;
+  }
+  /* Üst piksel dilimi (Mor-Cyan cızırtı) */
+  .glitch-title::before {
+    left: 3px;
+    text-shadow: -2px 0 #38bdf8, 2px 0 #c084fc;
+    color: #f3e8ff;
+    animation: glitchSliceTop 1.9s infinite linear alternate-reverse;
+  }
+  /* Alt piksel dilimi (Altın-Pembe cızırtı) */
+  .glitch-title::after {
+    left: -3px;
+    text-shadow: -2px 0 #eab308, 2px 0 #f43f5e;
+    color: #ddd6fe;
+    animation: glitchSliceBottom 1.4s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitchSliceTop {
+    0%   { clip-path: inset(12% 0 78% 0); transform: translate(-3px, -1px); }
+    15%  { clip-path: inset(65% 0 14% 0); transform: translate(4px, 1px); }
+    30%  { clip-path: inset(28% 0 55% 0); transform: translate(-4px, 0); }
+    45%  { clip-path: inset(82% 0 4% 0);  transform: translate(3px, -1px); }
+    60%  { clip-path: inset(8% 0 84% 0);  transform: translate(-2px, 2px); }
+    75%  { clip-path: inset(46% 0 38% 0); transform: translate(5px, -1px); }
+    90%  { clip-path: inset(72% 0 12% 0); transform: translate(-3px, 1px); }
+    100% { clip-path: inset(19% 0 66% 0); transform: translate(2px, 0); }
+  }
+
+  @keyframes glitchSliceBottom {
+    0%   { clip-path: inset(74% 0 8% 0);  transform: translate(4px, 1px); }
+    20%  { clip-path: inset(16% 0 68% 0); transform: translate(-5px, -1px); }
+    40%  { clip-path: inset(52% 0 29% 0); transform: translate(3px, 0); }
+    60%  { clip-path: inset(5% 0 86% 0);  transform: translate(-3px, 2px); }
+    80%  { clip-path: inset(61% 0 21% 0); transform: translate(4px, -2px); }
+    100% { clip-path: inset(34% 0 49% 0); transform: translate(-4px, 1px); }
+  }
+
+  @keyframes glitchSkew {
+    0%, 88%, 100% { transform: skewX(-7deg); }
+    90%           { transform: skewX(-14deg) scaleX(1.02); }
+    93%           { transform: skewX(4deg) scaleX(0.98); }
+    96%           { transform: skewX(-11deg); }
+  }
+
   .elite-name-box {
     margin-top: 26px;
     padding: 20px 24px;
@@ -2795,6 +2881,8 @@ async def _live_input(prompt=""):
     display: flex;
     flex-direction: column;
     gap: 11px;
+    position: relative;
+    z-index: 2;
   }
   .elite-name-label {
     font-size: 0.76rem;
@@ -2872,15 +2960,13 @@ async def _live_input(prompt=""):
   const STORAGE_KEY = 'pythonhazirlik_user_name';
   const savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
 
-  // Eski otomatik kapanan splash varsa gizle, kontrolü yeni perdeye al
   const oldSplash = document.getElementById('welcome-splash');
   if (oldSplash) oldSplash.style.display = 'none';
 
-  // Tamamen bağımsız, hiçbir zamanlayıcının silemeyeceği yeni giriş ekranı
   const gate = document.createElement('div');
   gate.id = 'elite-gate-overlay';
   gate.innerHTML = `
-    <h1 class="splash-main-title" style="opacity:1; transform:skewX(-6deg);">Python Stüdyoya</h1>
+    <h1 class="glitch-title" data-text="Python Stüdyoya">Python Stüdyoya</h1>
     <p class="splash-sub-gold" style="opacity:1; transform:none;">Hoşgeldiniz</p>
     <div class="elite-name-box">
       <div class="elite-name-label">
