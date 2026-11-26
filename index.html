@@ -3032,160 +3032,58 @@ async def _live_input(prompt=""):
   });
 })();
 </script>
-<!-- ELİT GİRİŞ EKRANI & DOĞAL TÜRKÇE YAPAY ZEKA SES MOTORU -->
+  <!-- ORİJİNAL GİRİŞ EKRANINI KORUYAN İSİM KUTUSU & AKICI AI SES SİSTEMİ -->
 <style>
-  #elite-gate-overlay {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at 50% 35%, #1e1b4b 0%, #090d16 65%, #05070c 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 2147483647;
-    opacity: 0;
-    animation: eliteGateAppear 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-                filter 0.85s ease;
+  #welcome-splash {
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
-
-  /* Giriş ekranının sade ve elit açılış efekti */
-  @keyframes eliteGateAppear {
-    0% {
-      opacity: 0;
-      filter: blur(12px);
-      transform: scale(1.03);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0);
-      transform: scale(1);
-    }
+  #welcome-splash.splash-unlock {
+    opacity: 0 !important;
+    transform: translateY(-30px) !important;
+    pointer-events: none !important;
   }
-
-  /* İsim girildikten sonraki sade, sinematik perde açılışı */
-  #elite-gate-overlay.gate-opening {
-    opacity: 0;
-    transform: translateY(-28px) scale(1.02);
-    filter: blur(10px);
-    pointer-events: none;
-  }
-
-  .elite-gate-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 36px 32px;
-    width: min(440px, 92vw);
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.06) 0%, rgba(124, 58, 237, 0.16) 50%, rgba(11, 15, 26, 0.92) 100%);
-    border: 1px solid rgba(196, 181, 253, 0.28);
-    border-top: 2px solid rgba(234, 179, 8, 0.75);
-    border-radius: 14px;
-    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65), 0 0 40px rgba(124, 58, 237, 0.18);
-    backdrop-filter: blur(16px);
-    opacity: 0;
-    transform: translateY(16px);
-    animation: eliteCardRise 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
-  }
-
-  @keyframes eliteCardRise {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .elite-brand-pill {
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #eab308;
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.35);
-    padding: 4px 12px;
-    border-radius: 99px;
-    margin-bottom: 14px;
-  }
-
-  .elite-main-title {
-    font-size: clamp(2rem, 4.2vw, 2.75rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #ffffff 15%, #e9d5ff 60%, #c084fc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0;
-    line-height: 1.15;
-  }
-
-  .elite-sub-title {
-    font-size: 0.92rem;
-    font-weight: 500;
-    color: #cbd5e1;
-    margin: 8px 0 24px 0;
-    letter-spacing: 0.02em;
-  }
-
-  .elite-input-group {
-    width: 100%;
+  .orig-name-wrap {
+    margin-top: 22px;
     display: flex;
     gap: 8px;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.78);
+    border: 1.5px solid rgba(168, 85, 247, 0.55);
+    border-left: 4px solid #eab308;
+    padding: 8px 10px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    z-index: 10;
   }
-
-  .elite-name-input {
-    flex: 1;
-    background: rgba(15, 23, 42, 0.85);
-    color: #f8fafc;
-    border: 1.5px solid rgba(168, 85, 247, 0.45);
-    border-radius: 8px;
-    padding: 11px 14px;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
+  .orig-name-input {
+    background: rgba(255, 255, 255, 0.94);
+    color: #0f172a;
+    border: 1px solid #a855f7;
+    border-radius: 4px;
+    padding: 7px 11px;
+    font-size: 0.86rem;
+    font-weight: 700;
     outline: none;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    width: 210px;
   }
-
-  .elite-name-input::placeholder {
-    color: #64748b;
-    font-weight: 500;
-  }
-
-  .elite-name-input:focus {
-    border-color: #eab308;
-    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
-  }
-
-  .elite-name-btn {
-    background: linear-gradient(135deg, #9333ea 0%, #6d28d9 100%);
-    color: #ffffff;
-    border: 1px solid rgba(234, 179, 8, 0.65);
-    border-radius: 8px;
-    padding: 11px 18px;
-    font-size: 0.84rem;
+  .orig-name-btn {
+    background: linear-gradient(135deg, #9333ea, #6b21a8);
+    color: #fff;
+    border: 1px solid #eab308;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-size: 0.8rem;
     font-weight: 800;
-    letter-spacing: 0.04em;
     cursor: pointer;
-    white-space: nowrap;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
-
-  .elite-name-btn:hover {
-    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
-    box-shadow: 0 6px 20px rgba(147, 51, 234, 0.45);
-    transform: translateY(-1px);
-  }
-
   .header-user-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 9px;
-    border-radius: 5px;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(255, 255, 255, 0.06));
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(139, 92, 246, 0.16);
     border: 1px solid rgba(168, 85, 247, 0.5);
     border-left: 3px solid var(--accent-gold, #eab308);
     color: var(--text-primary, #f8fafc);
@@ -3193,35 +3091,15 @@ async def _live_input(prompt=""):
     font-weight: 800;
     cursor: pointer;
     white-space: nowrap;
-    flex-shrink: 0;
   }
 </style>
 
 <script>
 (function () {
-  /* =========================================================
-     1. SADE & ELİT GİRİŞ EKRANI + YUMUŞAK STÜDYO AÇILIŞI
-     ========================================================= */
+  /* 1. SENİN KENDİ GİRİŞ EKRANINA DOKUNMADAN ALTINA İSİM KUTUSU EKLE */
   const STORAGE_KEY = 'pythonhazirlik_user_name';
   const savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
-
-  const oldSplash = document.getElementById('welcome-splash');
-  if (oldSplash) oldSplash.style.display = 'none';
-
-  const gate = document.createElement('div');
-  gate.id = 'elite-gate-overlay';
-  gate.innerHTML = `
-    <div class="elite-gate-card">
-      <div class="elite-brand-pill">PYTHON STÜDYO</div>
-      <h1 class="elite-main-title">Hoşgeldiniz</h1>
-      <p class="elite-sub-title">Çalışma alanına geçmek için geliştirici adını gir</p>
-      <div class="elite-input-group">
-        <input type="text" id="elite-name-input" class="elite-name-input" placeholder="Adın ve soyadın..." value="${savedName}" autocomplete="off" />
-        <button type="button" id="elite-name-submit" class="elite-name-btn">Başla →</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(gate);
+  const splash = document.getElementById('welcome-splash');
 
   function renderHeaderBadge(name) {
     const actionsBar = document.querySelector('.header-actions');
@@ -3243,127 +3121,111 @@ async def _live_input(prompt=""):
       };
       actionsBar.insertBefore(badge, saveBtn);
     }
-    badge.innerHTML = `<span style="color:var(--accent-gold, #eab308);">◆</span> ${name}`;
+    badge.innerHTML = `<span style="color:#eab308;">◆</span> ${name}`;
   }
 
   if (savedName) renderHeaderBadge(savedName);
 
-  const inputEl = document.getElementById('elite-name-input');
-  const submitBtn = document.getElementById('elite-name-submit');
-  setTimeout(() => inputEl && inputEl.focus(), 200);
+  if (splash) {
+    // Sitenin kendi otomatik kapanma zamanlayıcısını durdur, isim girilince açılsın
+    splash.style.display = 'flex';
+    splash.style.opacity = '1';
 
-  function enterStudio() {
-    const val = (inputEl.value || '').trim();
-    if (!val) {
-      inputEl.style.borderColor = '#f43f5e';
-      inputEl.focus();
-      return;
+    const box = document.createElement('div');
+    box.className = 'orig-name-wrap';
+    box.innerHTML = `
+      <input type="text" id="orig-name-input" class="orig-name-input" placeholder="Adını yaz..." value="${savedName}" autocomplete="off" />
+      <button type="button" id="orig-name-btn" class="orig-name-btn">Giriş →</button>
+    `;
+    splash.appendChild(box);
+
+    const inp = document.getElementById('orig-name-input');
+    const btn = document.getElementById('orig-name-btn');
+    setTimeout(() => inp && inp.focus(), 150);
+
+    function unlockSplash() {
+      const val = (inp.value || '').trim();
+      if (!val) {
+        inp.style.borderColor = '#f43f5e';
+        inp.focus();
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY, val);
+      renderHeaderBadge(val);
+      splash.classList.add('splash-unlock');
+      setTimeout(() => { splash.style.display = 'none'; }, 750);
     }
-    localStorage.setItem(STORAGE_KEY, val);
-    renderHeaderBadge(val);
-    gate.classList.add('gate-opening');
-    setTimeout(() => gate.remove(), 900);
+
+    btn.addEventListener('click', unlockSplash);
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        unlockSplash();
+      }
+    });
   }
 
-  submitBtn.addEventListener('click', enterStudio);
-  inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      enterStudio();
-    }
-  });
-
-  /* =========================================================
-     2. ESKİ VİDEO PANELİ İÇİN KESİKSİZ AI SES & TELAFFUZ MOTORU
-     ========================================================= */
+  /* 2. VİDEO PANELİ İÇİN KESİKSİZ AI SES & DOĞRU TELAFUZ MOTORU */
   if ('speechSynthesis' in window) {
-    let bestTurkishVoice = null;
-
-    function pickBestTurkishVoice() {
+    let bestVoice = null;
+    function loadTrVoice() {
       const voices = window.speechSynthesis.getVoices() || [];
-      const trVoices = voices.filter(v => (v.lang || '').toLowerCase().includes('tr'));
-      if (!trVoices.length) return;
-
-      // En doğal yapay zeka seslerini önceliklendir (Google / Microsoft Natural / Emel / Yelda)
-      bestTurkishVoice =
-        trVoices.find(v => /google|natural|neural|emel|yelda/i.test(v.name)) ||
-        trVoices[0];
+      const tr = voices.filter(v => (v.lang || '').toLowerCase().includes('tr'));
+      if (tr.length) {
+        bestVoice = tr.find(v => /google|natural|neural|emel|yelda/i.test(v.name)) || tr[0];
+      }
     }
+    loadTrVoice();
+    window.speechSynthesis.onvoiceschanged = loadTrVoice;
 
-    pickBestTurkishVoice();
-    window.speechSynthesis.onvoiceschanged = pickBestTurkishVoice;
-
-    // İngilizce Python terimlerini Türkçe fonetik telaffuza çevir ve kesik duraklamaları temizle
-    function polishTurkishPronunciation(rawText) {
-      if (!rawText) return '';
-      return rawText
+    function fixPronunciation(text) {
+      return (text || '')
         .replace(/print\s*\(\s*\)/gi, 'pirint fonksiyonu')
         .replace(/\bprint\b/gi, 'pirint')
         .replace(/input\s*\(\s*\)/gi, 'input fonksiyonu')
-        .replace(/\binput\b/gi, 'input')
         .replace(/range\s*\(\s*\)/gi, 'reync fonksiyonu')
         .replace(/\brange\b/gi, 'reync')
-        .replace(/type\s*\(\s*\)/gi, 'tayp fonksiyonu')
-        .replace(/\btype\b/gi, 'tayp')
-        .replace(/\.append\s*\(\s*\)/gi, 'nokta epend')
-        .replace(/\bappend\b/gi, 'epend')
         .replace(/\bwhile\b/gi, 'vayl')
-        .replace(/\bfor\b/gi, 'for')
         .replace(/\belif\b/gi, 'elif')
         .replace(/\belse\b/gi, 'els')
-        .replace(/\bdef\b/gi, 'def')
         .replace(/\breturn\b/gi, 'ritörn')
         .replace(/\bbreak\b/gi, 'bireyk')
-        .replace(/\bcontinue\b/gi, 'kontinyu')
-        .replace(/\bTrue\b/g, 'Turu')
-        .replace(/\bFalse\b/g, 'Fols')
         .replace(/\bfloat\b/gi, 'fıloat')
-        .replace(/\bint\b/gi, 'int')
         .replace(/\bstr\b/gi, 'sıtır')
         .replace(/\bturtle\b/gi, 'törtıl')
         .replace(/\bforward\b/gi, 'forvırd')
         .replace(/\bright\b/gi, 'rayt')
-        .replace(/\bleft\b/gi, 'left')
         .replace(/\bPython\b/gi, 'Paytın')
         .replace(/[#*_`~]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
     }
 
-    // Tarayıcının uzun metinlerde sesi kesmesini önleyen akıcı kuyruk sistemi
-    const originalSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis);
-    let keepAliveTimer = null;
+    const origSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis);
+    let keepTimer = null;
 
-    window.speechSynthesis.speak = function (utterance) {
-      if (!utterance) return;
-      pickBestTurkishVoice();
+    window.speechSynthesis.speak = function (utter) {
+      if (!utter) return;
+      loadTrVoice();
+      utter.text = fixPronunciation(utter.text);
+      utter.lang = 'tr-TR';
+      if (bestVoice) utter.voice = bestVoice;
+      utter.rate = 0.98;
+      utter.pitch = 1.02;
 
-      utterance.text = polishTurkishPronunciation(utterance.text);
-      utterance.lang = 'tr-TR';
-      if (bestTurkishVoice) {
-        utterance.voice = bestTurkishVoice;
-      }
-      // Daha akıcı, doğal ve kesintisiz konuşma hızı ve tonu
-      utterance.rate = 0.98;
-      utterance.pitch = 1.02;
-      utterance.volume = 1;
-
-      clearInterval(keepAliveTimer);
-      utterance.onstart = function () {
-        keepAliveTimer = setInterval(() => {
+      clearInterval(keepTimer);
+      utter.onstart = () => {
+        keepTimer = setInterval(() => {
           if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
             window.speechSynthesis.pause();
             window.speechSynthesis.resume();
           } else {
-            clearInterval(keepAliveTimer);
+            clearInterval(keepTimer);
           }
         }, 9000);
       };
-      utterance.onend = utterance.onerror = function () {
-        clearInterval(keepAliveTimer);
-      };
-
-      originalSpeak(utterance);
+      utter.onend = utter.onerror = () => clearInterval(keepTimer);
+      origSpeak(utter);
     };
   }
 })();
