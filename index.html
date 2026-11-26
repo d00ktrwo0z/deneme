@@ -2764,13 +2764,16 @@ async def _live_input(prompt=""):
   };
 })();
 </script>
-  <!-- GİRİŞ EKRANI İSİM SORMA & ÜST MENÜ İSİM ROZETİ EKLENTİSİ -->
+<!-- GİRİŞ EKRANI İSİM SORMA & ÜST MENÜ İSİM ROZETİ EKLENTİSİ (SABİT EKRAN) -->
 <style>
+  #welcome-splash {
+    z-index: 999999 !important;
+  }
   .elite-name-box {
     margin-top: 26px;
     padding: 20px 24px;
     width: min(390px, 90vw);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(124, 58, 237, 0.24) 48%, rgba(15, 22, 36, 0.92) 100%);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(124, 58, 237, 0.26) 48%, rgba(15, 22, 36, 0.94) 100%);
     border: 1.5px solid rgba(196, 181, 253, 0.55);
     border-left: 4px solid #eab308;
     border-radius: 3px;
@@ -2781,7 +2784,7 @@ async def _live_input(prompt=""):
     gap: 11px;
     opacity: 0;
     transform: translateY(14px);
-    animation: eliteBoxIn 0.6s ease forwards 0.45s;
+    animation: eliteBoxIn 0.55s ease forwards 0.35s;
   }
   @keyframes eliteBoxIn {
     to { opacity: 1; transform: translateY(0); }
@@ -2867,8 +2870,14 @@ async def _live_input(prompt=""):
 (function () {
   const STORAGE_KEY = 'pythonhazirlik_user_name';
   let savedName = (localStorage.getItem(STORAGE_KEY) || '').trim();
+  let entered = false;
 
-  // Üst menüde 💾 Kaydet butonunun hemen yanına isim rozetini yerleştir
+  // Ana kodun kurduğu 2.1 saniyelik otomatik kaydırma zamanlayıcısını sıfırla
+  const maxTimerId = window.setTimeout(function () {}, 0);
+  for (let i = 1; i <= maxTimerId; i++) {
+    window.clearTimeout(i);
+  }
+
   function renderHeaderBadge(name) {
     const actionsBar = document.querySelector('.header-actions');
     const saveBtn = actionsBar ? actionsBar.querySelector('.save-btn') : null;
@@ -2896,13 +2905,26 @@ async def _live_input(prompt=""):
     renderHeaderBadge(savedName);
   }
 
-  // Giriş ekranını (splash) bul ve keskin hatlı elit isim kutusunu içine yerleştir
-  const splash = document.getElementById('welcome-splash');
-  if (!splash) return;
+  // Giriş ekranını oluştur veya mevcut olanı kilitle
+  let splash = document.getElementById('welcome-splash');
+  if (!splash) {
+    splash = document.createElement('div');
+    splash.id = 'welcome-splash';
+    splash.innerHTML = `
+      <h1 class="splash-main-title">Python Stüdyoya</h1>
+      <p class="splash-sub-gold">Hoşgeldiniz</p>
+    `;
+    document.body.appendChild(splash);
+  }
+  splash.classList.remove('hide-splash');
 
-  // Orijinal otomatik kapanmayı durdurmak için splash elemanını klonlayıp tazele
-  const freshSplash = splash.cloneNode(true);
-  splash.parentNode.replaceChild(freshSplash, splash);
+  // Herhangi bir dış kod hide-splash eklemeye kalkarsa engelle
+  const lockObserver = new MutationObserver(() => {
+    if (!entered && splash.classList.contains('hide-splash')) {
+      splash.classList.remove('hide-splash');
+    }
+  });
+  lockObserver.observe(splash, { attributes: true, attributeFilter: ['class'] });
 
   const box = document.createElement('div');
   box.className = 'elite-name-box';
@@ -2916,22 +2938,29 @@ async def _live_input(prompt=""):
       <button type="button" id="elite-name-submit" class="elite-name-btn">Giriş ↵</button>
     </div>
   `;
-  freshSplash.appendChild(box);
+  splash.appendChild(box);
 
   const inputEl = document.getElementById('elite-name-input');
   const submitBtn = document.getElementById('elite-name-submit');
 
   setTimeout(() => {
     if (inputEl) inputEl.focus();
-  }, 550);
+  }, 450);
 
   function completeEntrance() {
-    const val = (inputEl.value || '').trim() || savedName || 'Misafir';
+    const val = (inputEl.value || '').trim();
+    if (!val) {
+      inputEl.focus();
+      inputEl.style.borderColor = '#f43f5e';
+      return;
+    }
+    entered = true;
+    lockObserver.disconnect();
     localStorage.setItem(STORAGE_KEY, val);
     renderHeaderBadge(val);
-    freshSplash.classList.add('hide-splash');
+    splash.classList.add('hide-splash');
     setTimeout(() => {
-      if (freshSplash && freshSplash.parentNode) freshSplash.remove();
+      if (splash && splash.parentNode) splash.remove();
     }, 850);
   }
 
