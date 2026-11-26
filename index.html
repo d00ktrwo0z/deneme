@@ -2499,5 +2499,270 @@ _turtle_log.clear()
   select(0);
 })();
 </script>
+  <!-- CANLI ETKİLEŞİMLİ KONSOL & SINIRSIZ INPUT CHAT EKLENTİSİ -->
+<style>
+  .live-chat-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg-panel);
+    border-top: 1.5px solid var(--border-line);
+    flex-shrink: 0;
+  }
+  .live-chat-bar.waiting {
+    border-top-color: var(--accent-gold);
+    background: rgba(234, 179, 8, 0.12);
+    box-shadow: inset 0 0 12px rgba(234, 179, 8, 0.15);
+  }
+  .live-chat-prompt {
+    font-family: 'Consolas', monospace;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    white-space: nowrap;
+  }
+  .live-chat-input {
+    flex: 1;
+    background: var(--bg-editor);
+    color: var(--text-primary);
+    border: 1.5px solid var(--border-line);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .live-chat-input:focus {
+    border-color: var(--accent-gold);
+  }
+  .live-chat-send {
+    background: linear-gradient(135deg, var(--accent-purple), #6d28d9);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .live-chat-send:hover {
+    opacity: 0.92;
+  }
+</style>
+
+<script>
+(function () {
+  function attachChatBar(containerEl, outputEl, prefix) {
+    if (!containerEl || document.getElementById(prefix + '-chat-bar')) return null;
+
+    const bar = document.createElement('div');
+    bar.className = 'live-chat-bar';
+    bar.id = prefix + '-chat-bar';
+    bar.innerHTML = `
+      <span class="live-chat-prompt" id="${prefix}-chat-prompt">&gt;&gt;&gt;</span>
+      <input type="text" class="live-chat-input" id="${prefix}-chat-input" placeholder="Kod input() sorduğunda cevabını buraya yazıp Enter'a bas..." autocomplete="off" />
+      <button type="button" class="live-chat-send" id="${prefix}-chat-send">Gönder ↵</button>
+    `;
+    containerEl.appendChild(bar);
+
+    const inputEl = document.getElementById(prefix + '-chat-input');
+    const sendBtn = document.getElementById(prefix + '-chat-send');
+    const promptEl = document.getElementById(prefix + '-chat-prompt');
+
+    let resolver = null;
+
+    function submitValue() {
+      const val = inputEl.value;
+      if (!resolver) return;
+      inputEl.value = '';
+      bar.classList.remove('waiting');
+      promptEl.textContent = '>>>';
+      inputEl.placeholder = "Kod input() sorduğunda cevabını buraya yazıp Enter'a bas...";
+
+      const line = document.createElement('div');
+      line.style.cssText = 'color:#eab308; font-weight:700; margin:2px 0;';
+      line.textContent = '› ' + val;
+      outputEl.appendChild(line);
+      outputEl.scrollTop = outputEl.scrollHeight;
+
+      const done = resolver;
+      resolver = null;
+      done(val);
+    }
+
+    sendBtn.addEventListener('click', submitValue);
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitValue();
+      }
+    });
+
+    return {
+      ask(promptText) {
+        if (promptText) {
+          const pLine = document.createElement('span');
+          pLine.style.color = '#c4b5fd';
+          pLine.textContent = String(promptText);
+          outputEl.appendChild(pLine);
+          outputEl.scrollTop = outputEl.scrollHeight;
+        }
+        bar.classList.add('waiting');
+        promptEl.textContent = 'Cevap:';
+        inputEl.placeholder = 'Cevabını yaz ve Enter\'a bas...';
+        inputEl.focus();
+        return new Promise((resolve) => {
+          resolver = resolve;
+        });
+      },
+      cancel() {
+        if (resolver) {
+          const done = resolver;
+          resolver = null;
+          done('');
+        }
+        bar.classList.remove('waiting');
+        promptEl.textContent = '>>>';
+      }
+    };
+  }
+
+  // 1. Ana Çalışma Alanı Çıktı Konsoluna Sohbet Kutusu Ekle
+  const mainConsoleArea = document.querySelector('.console-area');
+  const mainConsoleOut = document.getElementById('console-output');
+  const mainChat = attachChatBar(mainConsoleArea, mainConsoleOut, 'main');
+
+  // 2. Serbest Kod Penceresi Çıktı Alanına Sohbet Kutusu Ekle
+  const freeOut = document.getElementById('free-output');
+  let freeChat = null;
+  if (freeOut && freeOut.parentElement) {
+    const freeWrap = document.createElement('div');
+    freeWrap.style.cssText = 'flex:1; display:flex; flex-direction:column; min-width:0; border:1.5px solid var(--border-line); border-radius:8px; overflow:hidden; background:var(--bg-editor);';
+    freeOut.parentElement.insertBefore(freeWrap, freeOut);
+    freeOut.style.border = 'none';
+    freeOut.style.borderRadius = '0';
+    freeWrap.appendChild(freeOut);
+    freeChat = attachChatBar(freeWrap, freeOut, 'free');
+  }
+
+  // Python kodundaki input() çağrılarını asenkron hale getirip canlı sohbete bağlayan dönüştürücü
+  function transformInteractiveInput(code) {
+    if (!/\binput\s*\(/.test(code)) return { hasInput: false, code };
+    let transformed = code.replace(/\binput\s*\(/g, 'await _live_input(');
+    const indented = transformed.split('\n').map(line => '    ' + line).join('\n');
+    const wrapped = `async def __interactive_runner__():\n${indented}\nawait __interactive_runner__()`;
+    return { hasInput: true, code: wrapped };
+  }
+
+  function appendStreamText(outEl, text, isErr) {
+    if (!text) return;
+    const span = document.createElement('span');
+    if (isErr) span.style.color = '#f43f5e';
+    span.textContent = text;
+    outEl.appendChild(span);
+    outEl.scrollTop = outEl.scrollHeight;
+  }
+
+  // Mevcut runMainCode fonksiyonunu sar: Kontrol Et modunda orijinali korur, Çalıştır modunda canlı chat açar
+  const origRunMainCode = window.runMainCode;
+  window.runMainCode = async function (checkAnswer) {
+    const rawCode = document.getElementById('code-editor').value;
+    const prep = transformInteractiveInput(rawCode);
+
+    if (checkAnswer || !prep.hasInput || !mainChat) {
+      if (mainChat) mainChat.cancel();
+      return origRunMainCode.apply(this, arguments);
+    }
+
+    if (!pyodide) {
+      mainConsoleOut.textContent = 'Python motoru yükleniyor, birkaç saniye bekleyin...';
+      return;
+    }
+
+    mainChat.cancel();
+    mainConsoleOut.innerHTML = '';
+    mainConsoleOut.style.color = 'var(--text-primary)';
+    window._jsLiveInputMain = (p) => mainChat.ask(p);
+
+    try {
+      pyodide.runPython(PYTHON_TURTLE_SHIM + `
+import sys, json
+from js import _jsLiveInputMain
+_turtle_log.clear()
+class _LiveStream:
+    def __init__(self, err=False): self.err = err
+    def write(self, s):
+        if s: window._appendMainOut(str(s), self.err)
+    def flush(self): pass
+import js as window
+sys.stdout = _LiveStream(False)
+sys.stderr = _LiveStream(True)
+async def _live_input(prompt=""):
+    res = await _jsLiveInputMain(str(prompt))
+    return str(res)
+`);
+      window._appendMainOut = (txt, isErr) => appendStreamText(mainConsoleOut, txt, isErr);
+      await pyodide.runPythonAsync(prep.code);
+      const turtleData = pyodide.runPython('json.dumps(_turtle_log)');
+      renderTurtleCommands('turtle-canvas', turtleData);
+    } catch (err) {
+      appendStreamText(mainConsoleOut, '\n' + err.toString(), true);
+    }
+  };
+
+  // Mevcut runFreeCode fonksiyonunu sar: Serbest Kod'da sınırsız canlı input() sohbeti sağlar
+  const origRunFreeCode = window.runFreeCode;
+  window.runFreeCode = async function () {
+    const rawCode = document.getElementById('free-editor').value;
+    const prep = transformInteractiveInput(rawCode);
+
+    if (!prep.hasInput || !freeChat) {
+      if (freeChat) freeChat.cancel();
+      return origRunFreeCode.apply(this, arguments);
+    }
+
+    const yText = document.getElementById('free-yellow-text');
+    if (!pyodide) {
+      freeOut.textContent = 'Python motoru hazırlanıyor...';
+      return;
+    }
+
+    freeChat.cancel();
+    freeOut.innerHTML = '';
+    freeOut.style.color = 'var(--text-primary)';
+    window._jsLiveInputFree = (p) => freeChat.ask(p);
+
+    try {
+      pyodide.runPython(PYTHON_TURTLE_SHIM + `
+import sys, json
+from js import _jsLiveInputFree
+_turtle_log.clear()
+class _FreeLiveStream:
+    def __init__(self, err=False): self.err = err
+    def write(self, s):
+        if s: window._appendFreeOut(str(s), self.err)
+    def flush(self): pass
+import js as window
+sys.stdout = _FreeLiveStream(False)
+sys.stderr = _FreeLiveStream(True)
+async def _live_input(prompt=""):
+    res = await _jsLiveInputFree(str(prompt))
+    return str(res)
+`);
+      window._appendFreeOut = (txt, isErr) => appendStreamText(freeOut, txt, isErr);
+      await pyodide.runPythonAsync(prep.code);
+      const turtleData = pyodide.runPython('json.dumps(_turtle_log)');
+      renderTurtleCommands('free-turtle-canvas', turtleData);
+      if (yText) yText.textContent = 'Etkileşimli oturum tamamlandı.';
+    } catch (err) {
+      appendStreamText(freeOut, '\n' + err.toString(), true);
+      if (yText) yText.textContent = explainError(err.toString());
+    }
+  };
+})();
+</script>
 </body>
 </html>
