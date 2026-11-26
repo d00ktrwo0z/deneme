@@ -4318,5 +4318,517 @@ def _transform_user_code_ast(source_code):
   });
 })();
 </script>
+  <!-- 6 MİMARİ SORUNU ÇÖZEN NİHAİ MOTOR, GÜVENLİK VE GİRİŞ YAMASI -->
+<style>
+  #python-studio-lock-gate {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, #1e1b4b 0%, #090d16 70%, #05070c 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2147483647;
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #python-studio-lock-gate.gate-unlocked {
+    opacity: 0 !important;
+    transform: translateY(-100%) !important;
+    pointer-events: none !important;
+  }
+  .gate-hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    font-style: italic;
+    background: linear-gradient(135deg, #e9d5ff 0%, #a855f7 55%, #7e22ce 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: gateSlideUp 0.65s ease forwards 0.1s;
+  }
+  .gate-hero-sub {
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #eab308;
+    margin: 8px 0 0 0;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: gateSlideUp 0.65s ease forwards 0.3s;
+  }
+  @keyframes gateSlideUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .orig-name-wrap {
+    margin-top: 26px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1.5px solid rgba(168, 85, 247, 0.6);
+    border-left: 4px solid #eab308;
+    padding: 9px 11px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    transform: translateY(14px);
+    animation: gateSlideUp 0.65s ease forwards 0.45s;
+  }
+  .orig-name-input {
+    background: rgba(255, 255, 255, 0.96);
+    color: #0f172a;
+    border: 1px solid #a855f7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    outline: none;
+    width: 220px;
+  }
+  .orig-name-btn {
+    background: linear-gradient(135deg, #9333ea, #6b21a8);
+    color: #fff;
+    border: 1px solid #eab308;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .header-user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(139, 92, 246, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    border-left: 3px solid var(--accent-gold, #eab308);
+    color: var(--text-primary, #f8fafc);
+    font-size: 0.72rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #studio-safe-toast {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e1b4b;
+    color: #f8fafc;
+    border: 1.5px solid #eab308;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 2147483647;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+    display: none;
+  }
+</style>
+
+<script>
+(function () {
+  /* =========================================================================
+     SORUN 3 ÇÖZÜMÜ: ESKİ ZAMANLAYICILARI VE ÇOKLU GİRİŞ EKRANLARINI TEMİZLE
+     ========================================================================= */
+  const maxTimerId = window.setTimeout(() => {}, 0);
+  for (let i = 1; i <= maxTimerId; i++) {
+    window.clearInterval(i);
+  }
+  ['welcome-splash', 'elite-gate-overlay', 'studio-toast-alert', 'python-studio-lock-gate'].forEach(id => {
+    document.querySelectorAll('#' + id).forEach(el => el.remove());
+  });
+
+  /* =========================================================================
+     SORUN 5 ÇÖZÜMÜ: KENDİNİ ONARAN BİLDİRİM & HATA İLETEN LOCALSTORAGE SİSTEMİ
+     ========================================================================= */
+  let toastHideTimer = null;
+  function showStudioAlert(msg, isError) {
+    let toast = document.getElementById('studio-safe-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'studio-safe-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = String(msg || '');
+    toast.style.borderColor = isError ? '#f43f5e' : '#eab308';
+    toast.style.display = 'block';
+    clearTimeout(toastHideTimer);
+    toastHideTimer = setTimeout(() => {
+      const t = document.getElementById('studio-safe-toast');
+      if (t) t.style.display = 'none';
+    }, 4200);
+  }
+
+  if (!Storage.prototype.__safePatched) {
+    Storage.prototype.__safePatched = true;
+    const origSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      try {
+        origSetItem.call(this, key, value);
+      } catch (err) {
+        if (err && (err.name === 'QuotaExceededError' || err.code === 22)) {
+          showStudioAlert('⚠️ Tarayıcı depolama alanı doldu! İlerlemen kaydedilemedi.', true);
+        } else {
+          showStudioAlert('⚠️ Kayıt sırasında bir hata oluştu.', true);
+        }
+        throw err; // Hatayı yutmaz, çağıran fonksiyona iletir
+      }
+    };
+  }
+
+  /* =========================================================================
+     SORUN 3 (DEVAM): TEK GİRİŞ EKRANI & XSS KORUMALI İSİM YÖNETİMİ
+     ========================================================================= */
+  const STORAGE_KEY = 'pythonhazirlik_user_name';
+  function sanitizeName(raw) {
+    return String(raw || '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, 40);
+  }
+  const savedName = sanitizeName(localStorage.getItem(STORAGE_KEY));
+
+  function renderHeaderBadge(name) {
+    const safeName = sanitizeName(name);
+    if (!safeName) return;
+    const actionsBar = document.querySelector('.header-actions');
+    const saveBtn = actionsBar ? actionsBar.querySelector('.save-btn') : null;
+    if (!actionsBar || !saveBtn) return;
+
+    let badge = document.getElementById('header-user-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.id = 'header-user-badge';
+      badge.className = 'header-user-badge';
+      badge.title = 'İsmini değiştirmek için tıkla';
+      actionsBar.insertBefore(badge, saveBtn);
+    }
+
+    badge.onclick = function () {
+      const yeni = prompt('Stüdyoda görünecek adını gir:', sanitizeName(localStorage.getItem(STORAGE_KEY)));
+      const cleanYeni = sanitizeName(yeni);
+      if (cleanYeni) {
+        try {
+          localStorage.setItem(STORAGE_KEY, cleanYeni);
+          renderHeaderBadge(cleanYeni);
+        } catch (_) {}
+      }
+    };
+
+    badge.replaceChildren();
+    const diamond = document.createElement('span');
+    diamond.style.color = '#eab308';
+    diamond.textContent = '◆ ';
+    badge.appendChild(diamond);
+    badge.appendChild(document.createTextNode(safeName));
+  }
+
+  if (savedName) renderHeaderBadge(savedName);
+
+  const lockGate = document.createElement('div');
+  lockGate.id = 'python-studio-lock-gate';
+
+  const titleEl = document.createElement('h1');
+  titleEl.className = 'gate-hero-title';
+  titleEl.textContent = 'Python Stüdyoya';
+
+  const subEl = document.createElement('p');
+  subEl.className = 'gate-hero-sub';
+  subEl.textContent = 'Hoşgeldiniz';
+
+  const box = document.createElement('div');
+  box.className = 'orig-name-wrap';
+
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'orig-name-input';
+  inp.placeholder = 'Adını yaz...';
+  inp.autocomplete = 'off';
+  inp.maxLength = 40;
+  inp.value = savedName;
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'orig-name-btn';
+  btn.textContent = 'Giriş →';
+
+  box.appendChild(inp);
+  box.appendChild(btn);
+  lockGate.appendChild(titleEl);
+  lockGate.appendChild(subEl);
+  lockGate.appendChild(box);
+  document.body.appendChild(lockGate);
+
+  setTimeout(() => inp.focus(), 200);
+
+  function unlockGate() {
+    const val = sanitizeName(inp.value);
+    if (!val) {
+      inp.style.borderColor = '#f43f5e';
+      inp.focus();
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, val);
+    } catch (_) {}
+    renderHeaderBadge(val);
+    lockGate.classList.add('gate-unlocked');
+    setTimeout(() => lockGate.remove(), 750);
+  }
+
+  btn.addEventListener('click', unlockGate);
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      unlockGate();
+    }
+  });
+
+  /* =========================================================================
+     SORUN 2 ÇÖZÜMÜ: YEDEK DOSYASI YÜKLEMEYİ OTOMATİK DOĞRULAMA SİSTEMİNE BAĞLA
+     ========================================================================= */
+  function clampIndex(val, maxLen) {
+    const n = Number(val);
+    if (!Number.isInteger(n) || n < 0) return 0;
+    if (typeof maxLen === 'number' && maxLen > 0 && n >= maxLen) return maxLen - 1;
+    return n;
+  }
+
+  window.validateAndSanitizeBackupData = function (rawObj) {
+    if (!rawObj || typeof rawObj !== 'object' || Array.isArray(rawObj)) {
+      throw new Error('Geçersiz yedek dosyası formatı.');
+    }
+    const maxTopics = Array.isArray(window.curriculum) ? window.curriculum.length : 10;
+    const topicIdx = clampIndex(rawObj.topicIndex ?? rawObj.currentTopic ?? 0, maxTopics);
+
+    let maxTasks = 20;
+    if (Array.isArray(window.curriculum) && window.curriculum[topicIdx] && Array.isArray(window.curriculum[topicIdx].tasks)) {
+      maxTasks = window.curriculum[topicIdx].tasks.length;
+    }
+    const taskIdx = clampIndex(rawObj.taskIndex ?? rawObj.currentTask ?? 0, maxTasks);
+
+    const safeCodes = {};
+    if (rawObj.savedCodes && typeof rawObj.savedCodes === 'object' && !Array.isArray(rawObj.savedCodes)) {
+      for (const [k, v] of Object.entries(rawObj.savedCodes)) {
+        if (typeof k === 'string' && typeof v === 'string' && v.length <= 50000) {
+          safeCodes[k] = v;
+        }
+      }
+    }
+
+    return {
+      ...rawObj,
+      topicIndex: topicIdx,
+      currentTopic: topicIdx,
+      taskIndex: taskIdx,
+      currentTask: taskIdx,
+      savedCodes: safeCodes
+    };
+  };
+
+  if (!JSON.__backupParsePatched) {
+    JSON.__backupParsePatched = true;
+    const origJSONParse = JSON.parse;
+    JSON.parse = function (text, reviver) {
+      const parsed = origJSONParse.call(this, text, reviver);
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        !Array.isArray(parsed) &&
+        ('savedCodes' in parsed || 'topicIndex' in parsed || 'currentTopic' in parsed)
+      ) {
+        return window.validateAndSanitizeBackupData(parsed);
+      }
+      return parsed;
+    };
+  }
+
+  /* =========================================================================
+     SORUN 1, 4 & 6 ÇÖZÜMÜ: YEREL `pyodide` YAKALAMA + ASYNC DEF AST + SINAV INPUTU
+     ========================================================================= */
+  window._real_interactive_input = function (promptText) {
+    return new Promise((resolve) => {
+      const label = String(promptText || 'Değer girin:');
+      const liveInput = document.querySelector('#live-chat-input, .live-input-field');
+      const liveBtn = document.querySelector('#live-chat-send, .live-input-send');
+      if (liveInput && liveBtn && liveInput.offsetParent !== null) {
+        liveInput.placeholder = label;
+        liveInput.focus();
+        const onSend = () => {
+          const val = liveInput.value;
+          liveInput.value = '';
+          cleanup();
+          resolve(val);
+        };
+        const onKey = (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onSend();
+          }
+        };
+        const cleanup = () => {
+          liveBtn.removeEventListener('click', onSend);
+          liveInput.removeEventListener('keydown', onKey);
+        };
+        liveBtn.addEventListener('click', onSend);
+        liveInput.addEventListener('keydown', onKey);
+      } else {
+        const ans = window.prompt(label, '');
+        resolve(ans === null ? '' : String(ans));
+      }
+    });
+  };
+
+  function attachGuardsToPyodideInstance(pyInst) {
+    if (!pyInst || pyInst.__guardsAttached) return;
+    pyInst.__guardsAttached = true;
+    window.pyodide = pyInst;
+
+    // 1. AST: Fonksiyon içi def -> async def dönüşümü + sonsuz döngü koruması + sınav input engeli
+    pyInst.runPython(`
+import ast, sys, time, builtins
+
+class _InfiniteLoopError(Exception):
+    pass
+
+def _install_loop_guard(max_steps=180000, max_seconds=3.0):
+    steps = 0
+    start_t = time.monotonic()
+    def _tracer(frame, event, arg):
+        nonlocal steps
+        if event == 'line':
+            steps += 1
+            if steps > max_steps or (time.monotonic() - start_t) > max_seconds:
+                sys.settrace(None)
+                raise _InfiniteLoopError("Sonsuz döngü koruması: Kod çok uzun sürdüğü için durduruldu.")
+        return _tracer
+    sys.settrace(_tracer)
+
+def _clear_loop_guard():
+    sys.settrace(None)
+
+class _FullAsyncInputTransformer(ast.NodeTransformer):
+    def __init__(self):
+        self.async_funcs = set()
+
+    def _contains_input(self, node):
+        for child in ast.walk(node):
+            if isinstance(child, ast.Call) and isinstance(child.func, ast.Name) and child.func.id == 'input':
+                return True
+        return False
+
+    def visit_FunctionDef(self, node):
+        has_inp = self._contains_input(node)
+        if has_inp:
+            self.async_funcs.add(node.name)
+        self.generic_visit(node)
+        if has_inp:
+            async_fn = ast.AsyncFunctionDef(
+                name=node.name,
+                args=node.args,
+                body=node.body,
+                decorator_list=node.decorator_list,
+                returns=node.returns,
+                type_comment=getattr(node, 'type_comment', None)
+            )
+            return ast.copy_location(async_fn, node)
+        return node
+
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        if isinstance(node.func, ast.Name):
+            if node.func.id == 'input':
+                await_node = ast.Await(
+                    value=ast.Call(
+                        func=ast.Name(id='_real_interactive_input', ctx=ast.Load()),
+                        args=node.args,
+                        keywords=node.keywords
+                    )
+                )
+                return ast.copy_location(await_node, node)
+            elif node.func.id in self.async_funcs:
+                return ast.copy_location(ast.Await(value=node), node)
+        return node
+
+def _transform_user_code_ast(source_code):
+    try:
+        tree = ast.parse(source_code, mode='exec')
+        # Çok geçişli dönüşüm: iç içe veya sonradan tanımlanan async fonksiyon çağrılarını da yakalar
+        transformer = _FullAsyncInputTransformer()
+        tree = transformer.visit(tree)
+        if transformer.async_funcs:
+            tree = transformer.visit(tree)
+        ast.fix_missing_locations(tree)
+        return ast.unparse(tree)
+    except SyntaxError:
+        return source_code
+`);
+
+    const origRunPython = pyInst.runPython.bind(pyInst);
+    pyInst.runPython = function (code, ...args) {
+      let src = String(code || '');
+      // Sorun 4 Çözümü: Sınav sistemindeki sabit ("25" / "Python") sahte input atamasını etkisizleştir
+      if (src.includes('builtins.input') && (src.includes('"25"') || src.includes("'25'") || src.includes('"Python"'))) {
+        src = src.replace(/builtins\.input\s*=\s*lambda[^\n]*/g, 'pass # Gercek input korundu');
+      }
+      return origRunPython(src, ...args);
+    };
+
+    const origRunAsync = pyInst.runPythonAsync.bind(pyInst);
+    pyInst.runPythonAsync = async function (code, ...args) {
+      let safeCode = String(code || '');
+      // Sınav modunda veya normal modda sahte input satırı varsa temizle
+      if (safeCode.includes('builtins.input') && (safeCode.includes('"25"') || safeCode.includes('"Python"'))) {
+        safeCode = safeCode.replace(/builtins\.input\s*=\s*lambda[^\n]*/g, 'pass');
+      }
+      try {
+        pyInst.globals.set('_raw_src_tmp', safeCode);
+        safeCode = origRunPython('_transform_user_code_ast(_raw_src_tmp)');
+        origRunPython('_install_loop_guard()');
+        return await origRunAsync(safeCode, ...args);
+      } finally {
+        try { origRunPython('_clear_loop_guard()'); } catch (_) {}
+      }
+    };
+  }
+
+  // Yerel `let pyodide` değişkenini hem loadPyodide üzerinden hem de ilk çalıştırma çağrısında yakala
+  if (typeof window.loadPyodide === 'function' && !window.loadPyodide.__hooked) {
+    const origLoadPyodide = window.loadPyodide;
+    window.loadPyodide = async function (...args) {
+      const inst = await origLoadPyodide.apply(this, args);
+      attachGuardsToPyodideInstance(inst);
+      return inst;
+    };
+    window.loadPyodide.__hooked = true;
+  }
+
+  // Eğer Pyodide bizden önce yüklendiyse, ilk runPythonAsync / runPython çağrısında yakalamak için
+  // WebAssembly / Pyodide nesnesini tarayan genel kanca
+  const pyFinderInterval = setInterval(() => {
+    if (window.pyodide) {
+      attachGuardsToPyodideInstance(window.pyodide);
+      clearInterval(pyFinderInterval);
+      return;
+    }
+    // Global kapsamdaki nesneler arasında Pyodide örneğini ara
+    for (const key of Object.getOwnPropertyNames(window)) {
+      try {
+        const val = window[key];
+        if (val && typeof val === 'object' && typeof val.runPythonAsync === 'function' && typeof val.globals === 'object') {
+          attachGuardsToPyodideInstance(val);
+          clearInterval(pyFinderInterval);
+          return;
+        }
+      } catch (_) {}
+    }
+  }, 500);
+})();
+</script>
 </body>
 </html>
